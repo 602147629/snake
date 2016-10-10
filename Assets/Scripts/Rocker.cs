@@ -17,6 +17,19 @@ public class Rocker : MonoBehaviour {
             {
                 obj.transform.localPosition = obj.transform.localPosition.normalized * gameObject.GetComponent<RectTransform>().sizeDelta.x / 2;
             }
+            GameLogin.instance.SetSelfTo(new Vector3(obj.transform.localPosition.x,0, obj.transform.localPosition.y));
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            obj.transform.localPosition = Vector3.zero;
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            GameLogin.instance.SetSelfLength(GameLogin.instance.m_SelfSnake._surplusLength + 1);
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            GameLogin.instance.SetSelfLength(GameLogin.instance.m_SelfSnake._surplusLength - 1);
         }
     }
 }
