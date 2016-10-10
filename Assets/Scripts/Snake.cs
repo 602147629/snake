@@ -7,12 +7,13 @@ public class Snake
     public int _surplusLength;
     public float _speed;
     public string _name;
-    public int _jg = 7;
+    public int _jg = 4;
     private GameObject _parent;
     public List<GameObject> _nodeList = new List<GameObject>();
     public List<Vector3> _targetPos = new List<Vector3>();
+
     // Use this for initialization
-    public void Init(GameObject snakeModel, string name, Vector3 pos, int surplusLength, float speed)
+    public void Init(string name, Vector3 pos, int surplusLength, float speed)
     {
         _name = name;
         _speed = speed;
@@ -20,7 +21,8 @@ public class Snake
         _parent = new GameObject();
         _parent.name = name;
         _targetPos.Add(pos);
-        SetLength(surplusLength, snakeModel);
+        CreateHead();
+        SetLength(surplusLength);
     }
     public void Move(Vector3 tarPos, float deltaTime)
     {
@@ -32,8 +34,8 @@ public class Snake
         {
             Vector3 tempV = _targetPos[i * _jg < _targetPos.Count ? i * _jg : _targetPos.Count - 1];
             _nodeList[i].transform.LookAt(tempV);
-            _nodeList[i].transform.position = tempV;
-            _nodeList[i].SetActive(true);
+            _nodeList[i].transform.position = Vector3.MoveTowards(_nodeList[i].transform.position, tempV, _speed * Time.deltaTime);
+            //_nodeList[i].SetActive(true);
         }
         if (_surplusLength > 0)
         {
@@ -44,27 +46,17 @@ public class Snake
             }
         }
     }
-    public void SetLength(int length, GameObject snakeModel = null)
+    public void SetLength(int length)
     {
-        if (snakeModel == null)
-        {
-            if (_nodeList.Count == 0)
-            {
-                return;
-            }
-            else
-            {
-                snakeModel = _nodeList[0];
-            }
-        }
         _surplusLength = length;
+        string path = ResConfig.THEME_PATH + UserLogic.Instance.ThemeUsing + "/body";
+        GameObject bodyRes = Resources.Load<GameObject>(path);
         for (int i = _nodeList.Count; i < _surplusLength; i++)
         {
-            GameObject node = GameObject.Instantiate(snakeModel);
-
+            GameObject node = GameObject.Instantiate(bodyRes);
             node.name = i.ToString();
             node.transform.parent = _parent.transform;
-            node.transform.localScale = Vector3.one;
+          //  node.transform.localScale = Vector3.one;
             _nodeList.Add(node);
         }
         for (int i = _nodeList.Count - 1; i > _surplusLength - 1; i--)
@@ -72,5 +64,19 @@ public class Snake
             GameObject.Destroy(_nodeList[i]);
             _nodeList.RemoveAt(i);
         }
+    }
+
+    private void CreateHead()
+    {
+        string path = ResConfig.THEME_PATH + UserLogic.Instance.ThemeUsing + "/head";
+        GameObject modelRes = Resources.Load<GameObject>(path);
+        if (null == modelRes)
+        {
+            return;
+        }
+        GameObject head = GameObject.Instantiate<GameObject>(modelRes);
+        head.transform.SetParent(_parent.transform);
+       // head.transform.localScale = Vector3.one;
+        _nodeList.Add(head);
     }
 }

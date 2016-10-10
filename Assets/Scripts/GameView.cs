@@ -14,11 +14,13 @@ public class GameView : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         GameLogin.instance.Update();
-
-        Vector3 tarPos = GameLogin.instance.m_SelfSnake._nodeList[0].transform.position;
-        myCamera.transform.position = tarPos + new Vector3(0, 40, -10);
-        myCamera.transform.LookAt(tarPos);
-
         GameLogin.instance.m_SelfSnake.Update();
+    }
+
+    void LateUpdate()
+    {
+        Vector3 tarPos = GameLogin.instance.m_SelfSnake._nodeList[0].transform.position;
+        myCamera.transform.position = tarPos + new Vector3(0, 20, -10);
+        myCamera.transform.LookAt(tarPos);
     }
 }

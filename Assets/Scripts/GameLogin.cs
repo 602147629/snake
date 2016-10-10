@@ -26,7 +26,7 @@ public class GameLogin
     public Snake CreateSnake(string name)
     {
         Snake snake = new Snake();
-        snake.Init(m_GameView.m_SnakeObjModel, name, Vector3.zero, 20, 10f);
+        snake.Init(name, Vector3.zero, 20, 10f);
         return snake;
     }
     public void SetSelfTo(Vector3 to)
