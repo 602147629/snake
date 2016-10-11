@@ -14,7 +14,7 @@ public class GameView : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         GameLogin.instance.Update(Time.deltaTime);
-        GameLogin.instance.m_SelfSnake.Update(Time.deltaTime);
+        GameLogin.instance.m_SelfSnake.Update();
     }
 
     void LateUpdate()
