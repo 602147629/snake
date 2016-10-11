@@ -7,7 +7,6 @@ public class Snake
     public int _surplusLength;
     public float _speed;
     public string _name;
-    public int _jg = 4;
     private GameObject _parent;
     public List<GameObject> _nodeList = new List<GameObject>();
     public List<Vector3> _targetPos = new List<Vector3>();
@@ -26,24 +25,48 @@ public class Snake
     }
     public void Move(Vector3 tarPos, float deltaTime)
     {
-        _targetPos.Insert(0, _targetPos[0] + tarPos.normalized * _speed * deltaTime);
+        _targetPos.Insert(0, _targetPos[0] + tarPos.normalized * _speed);
     }
     public void Update()
     {
-        for (int i = 0; i < _surplusLength; i++)
+        if (_targetPos.Count == 0)
         {
-            Vector3 tempV = _targetPos[i * _jg < _targetPos.Count ? i * _jg : _targetPos.Count - 1];
-            _nodeList[i].transform.LookAt(tempV);
-            _nodeList[i].transform.position = Vector3.MoveTowards(_nodeList[i].transform.position, tempV, _speed * Time.deltaTime);
-            //_nodeList[i].SetActive(true);
+            return;
         }
-        if (_surplusLength > 0)
+        int idx = 0;
+        Vector3 tempV = _targetPos[idx];
+        _nodeList[0].transform.LookAt(tempV);
+        _nodeList[0].transform.position = tempV;
+        for (int i = 1; i < _surplusLength; i++)
         {
-            int a = (_surplusLength - 1) * _jg + 1;
-            if (a < _nodeList.Count)
+            bool isHavePos = false;
+            float dis = 0;
+            float _jg = (_nodeList[i - 1].transform.localScale.z + _nodeList[i].transform.localScale.z) * 0.48f;
+            for (; idx < _targetPos.Count; idx++)
             {
-                _nodeList.RemoveRange(a, _nodeList.Count - a);
+                float tempDis = dis;
+                dis += Vector3.Distance(tempV, _targetPos[idx]);
+                if (dis > _jg)
+                {
+                    tempV = tempV + (_targetPos[idx] - tempV).normalized * (_jg - tempDis);
+                    isHavePos = true;
+                    break;
+                }
+                else
+                {
+                    tempV = _targetPos[idx];
+                }
             }
+            if (!isHavePos)
+            {
+                tempV = _targetPos[_targetPos.Count - 1];
+            }
+            _nodeList[i].transform.LookAt(tempV);
+            _nodeList[i].transform.position = tempV;
+        }
+        if (_targetPos.Count > idx)
+        {
+            _targetPos.RemoveRange(idx, _targetPos.Count - idx);
         }
     }
     public void SetLength(int length)
@@ -51,12 +74,13 @@ public class Snake
         _surplusLength = length;
         string path = ResConfig.THEME_PATH + UserLogic.Instance.ThemeUsing + "/body";
         GameObject bodyRes = Resources.Load<GameObject>(path);
+        int bodyCount = bodyRes.transform.childCount;
         for (int i = _nodeList.Count; i < _surplusLength; i++)
         {
-            GameObject node = GameObject.Instantiate(bodyRes);
+            int idx = (i - 1) % bodyCount;
+            GameObject node = GameObject.Instantiate(bodyRes.transform.GetChild(idx).gameObject);
             node.name = i.ToString();
             node.transform.parent = _parent.transform;
-          //  node.transform.localScale = Vector3.one;
             _nodeList.Add(node);
         }
         for (int i = _nodeList.Count - 1; i > _surplusLength - 1; i--)
