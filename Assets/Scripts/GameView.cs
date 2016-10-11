@@ -4,7 +4,6 @@ using System.Collections;
 public class GameView : MonoBehaviour {
 
     public Camera myCamera;
-    public GameObject m_SnakeObjModel;
     // Use this for initialization
     void Start () {
         GameLogin.instance.Init(this);
