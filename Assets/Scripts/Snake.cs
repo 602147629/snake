@@ -28,14 +28,15 @@ public class Snake
     {
         _targetPos.Insert(0, _targetPos[0] + tarPos.normalized * _speed * deltaTime);
     }
-    public void Update()
+    public void Update(float deltaTime)
     {
         for (int i = 0; i < _surplusLength; i++)
         {
             Vector3 tempV = _targetPos[i * _jg < _targetPos.Count ? i * _jg : _targetPos.Count - 1];
             _nodeList[i].transform.LookAt(tempV);
-            _nodeList[i].transform.position = Vector3.MoveTowards(_nodeList[i].transform.position, tempV, _speed * Time.deltaTime);
-            //_nodeList[i].SetActive(true);
+            //float angle = 
+            //_nodeList[i].transform.rotation = Quaternion.Slerp()
+            _nodeList[i].transform.position = Vector3.MoveTowards(_nodeList[i].transform.position, tempV, _speed * deltaTime);
         }
         if (_surplusLength > 0)
         {
@@ -56,7 +57,6 @@ public class Snake
             GameObject node = GameObject.Instantiate(bodyRes);
             node.name = i.ToString();
             node.transform.parent = _parent.transform;
-          //  node.transform.localScale = Vector3.one;
             _nodeList.Add(node);
         }
         for (int i = _nodeList.Count - 1; i > _surplusLength - 1; i--)
@@ -76,7 +76,6 @@ public class Snake
         }
         GameObject head = GameObject.Instantiate<GameObject>(modelRes);
         head.transform.SetParent(_parent.transform);
-       // head.transform.localScale = Vector3.one;
         _nodeList.Add(head);
     }
 }
