@@ -52,22 +52,16 @@ public class Login : MonoBehaviour
                     {
                         ProtobufSerializer ps = new ProtobufSerializer();
                         ps.Serialize(mstream, loginMsg);
-                        Debug.Log(mstream.ToArray().Length + " =====================");
-                        byte[] b = new byte[mstream.Length];
 
                         MemoryStream ms = new MemoryStream();
-                        byte[] lens = System.BitConverter.GetBytes(b.Length);
+                        byte[] lens = System.BitConverter.GetBytes(mstream.Length);
                         Debug.Log("===============lens: " + lens.Length);
                         ms.Write(lens, 0, lens.Length);
                         byte[] lenId = System.BitConverter.GetBytes(0);
                         ms.Write(lenId, 0, lenId.Length);
-                        //ms.WriteByte(Convert.ToByte(0));
-                        //ms.WriteByte(Convert.ToByte(b.Length));
+                        byte[] b = mstream.ToArray();
                         ms.Write(b, 0, b.Length);
 
-
-                        //mstream.Position = 0;
-                        // mstream.Read(b, 0, b.Length);//.ToArray();
                         byte[] s = ms.ToArray();
                         stream.Write(s, 0, s.Length);
                     }
