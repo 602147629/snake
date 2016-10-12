@@ -54,10 +54,9 @@ public class Login : MonoBehaviour
                         ps.Serialize(mstream, loginMsg);
 
                         MemoryStream ms = new MemoryStream();
-                        byte[] lens = System.BitConverter.GetBytes(mstream.Length);
-                        Debug.Log("===============lens: " + lens.Length);
+                        byte[] lens = System.BitConverter.GetBytes((Int16) mstream.Length);
                         ms.Write(lens, 0, lens.Length);
-                        byte[] lenId = System.BitConverter.GetBytes(0);
+                        byte[] lenId = System.BitConverter.GetBytes((Int16)0);
                         ms.Write(lenId, 0, lenId.Length);
                         byte[] b = mstream.ToArray();
                         ms.Write(b, 0, b.Length);
