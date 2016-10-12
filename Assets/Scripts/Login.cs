@@ -4,6 +4,7 @@ using Snake3D;
 using System.Net.Sockets;
 using System.Net;
 using ProtoBuf;
+using System.Threading;
 
 public class Login : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class Login : MonoBehaviour
     {
         if (GUILayout.Button("登录"))
         {
-            LoginReq loginMsg = new LoginReq();
+            Snake3D.Login loginMsg = new Snake3D.Login();
             loginMsg.AccountId = "meizu";
             loginMsg.ThemeType = 1;
             using (TcpClient client = new TcpClient())
@@ -42,7 +43,7 @@ public class Login : MonoBehaviour
                     //接收
                     Debug.Log("CLIENT : 等待响应...");
 
-                    LoginRes myResponse = ProtoBuf.Serializer.DeserializeWithLengthPrefix<LoginRes>(stream, PrefixStyle.Base128);
+                    Snake3D.Login myResponse = ProtoBuf.Serializer.DeserializeWithLengthPrefix<Snake3D.Login>(stream, PrefixStyle.Base128);
 
                     string result = string.Format("CLIENT: 成功获取结果, RoomId ={0}, RoomW ={1}, RoomH ={2}, StartX ={3}, StartY ={4}", myResponse.RoomId, myResponse.RoomW, myResponse.RoomH, myResponse.StartX, myResponse.StartY);
                     Debug.Log(result);
