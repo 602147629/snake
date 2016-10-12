@@ -6,6 +6,9 @@ using System.Net;
 using ProtoBuf;
 using System.Threading;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System;
 
 public class Login : MonoBehaviour
 {
@@ -20,6 +23,13 @@ public class Login : MonoBehaviour
     void Update()
     {
 
+    }
+
+    // 翻转字节顺序 (32-bit)
+    public static UInt32 ReverseBytes(UInt32 value)
+    {
+        return (value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |
+               (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24;
     }
 
     void OnGUI()
@@ -44,9 +54,22 @@ public class Login : MonoBehaviour
                         ps.Serialize(mstream, loginMsg);
                         Debug.Log(mstream.ToArray().Length + " =====================");
                         byte[] b = new byte[mstream.Length];
-                        mstream.Position = 0;
-                        mstream.Read(b, 0, b.Length);//.ToArray();
-                        stream.Write(b, 0, b.Length);
+
+                        MemoryStream ms = new MemoryStream();
+                        byte[] lens = System.BitConverter.GetBytes(b.Length);
+                        Debug.Log("===============lens: " + lens.Length);
+                        ms.Write(lens, 0, lens.Length);
+                        byte[] lenId = System.BitConverter.GetBytes(0);
+                        ms.Write(lenId, 0, lenId.Length);
+                        //ms.WriteByte(Convert.ToByte(0));
+                        //ms.WriteByte(Convert.ToByte(b.Length));
+                        ms.Write(b, 0, b.Length);
+
+
+                        //mstream.Position = 0;
+                        // mstream.Read(b, 0, b.Length);//.ToArray();
+                        byte[] s = ms.ToArray();
+                        stream.Write(s, 0, s.Length);
                     }
 
                     //接收
