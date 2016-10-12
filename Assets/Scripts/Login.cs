@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Net;
 using ProtoBuf;
 using System.Threading;
+using System.IO;
 
 public class Login : MonoBehaviour
 {
@@ -37,8 +38,16 @@ public class Login : MonoBehaviour
                 {
                     //发送
                     Debug.Log("CLIENT : 发送数据...");
-
-                    ProtoBuf.Serializer.SerializeWithLengthPrefix(stream, loginMsg, PrefixStyle.Base128);
+                    using (MemoryStream mstream = new MemoryStream())
+                    {
+                        ProtobufSerializer ps = new ProtobufSerializer();
+                        ps.Serialize(mstream, loginMsg);
+                        Debug.Log(mstream.ToArray().Length + " =====================");
+                        byte[] b = new byte[mstream.Length];
+                        mstream.Position = 0;
+                        mstream.Read(b, 0, b.Length);//.ToArray();
+                        stream.Write(b, 0, b.Length);
+                    }
 
                     //接收
                     Debug.Log("CLIENT : 等待响应...");
