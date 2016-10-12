@@ -54,13 +54,14 @@ public class Login : MonoBehaviour
                         ps.Serialize(mstream, loginMsg);
 
                         MemoryStream ms = new MemoryStream();
-                        byte[] lens = System.BitConverter.GetBytes((Int16) mstream.Length);
-                        ms.Write(lens, 0, lens.Length);
-                        byte[] lenId = System.BitConverter.GetBytes((Int16)0);
-                        ms.Write(lenId, 0, lenId.Length);
+                        ms.WriteByte(Convert.ToByte(mstream.Length));
+                        ms.WriteByte(Convert.ToByte(0));
+                        //byte[] lens = System.BitConverter.GetBytes((Int16) mstream.Length);
+                        //ms.Write(lens, 0, lens.Length);
+                        //byte[] lenId = System.BitConverter.GetBytes((Int16)0);
+                        //ms.Write(lenId, 0, lenId.Length);
                         byte[] b = mstream.ToArray();
                         ms.Write(b, 0, b.Length);
-
                         byte[] s = ms.ToArray();
                         stream.Write(s, 0, s.Length);
                     }
@@ -68,10 +69,10 @@ public class Login : MonoBehaviour
                     //接收
                     Debug.Log("CLIENT : 等待响应...");
 
-                    Snake3D.Login myResponse = ProtoBuf.Serializer.DeserializeWithLengthPrefix<Snake3D.Login>(stream, PrefixStyle.Base128);
+                    //Snake3D.Login myResponse = ProtoBuf.Serializer.DeserializeWithLengthPrefix<Snake3D.Login>(stream, PrefixStyle.Base128);
 
-                    string result = string.Format("CLIENT: 成功获取结果, RoomId ={0}, RoomW ={1}, RoomH ={2}, StartX ={3}, StartY ={4}", myResponse.RoomId, myResponse.RoomW, myResponse.RoomH, myResponse.StartX, myResponse.StartY);
-                    Debug.Log(result);
+                    //string result = string.Format("CLIENT: 成功获取结果, RoomId ={0}, RoomW ={1}, RoomH ={2}, StartX ={3}, StartY ={4}", myResponse.RoomId, myResponse.RoomW, myResponse.RoomH, myResponse.StartX, myResponse.StartY);
+                    //Debug.Log(result);
                     //关闭
                     stream.Close();
                 }
