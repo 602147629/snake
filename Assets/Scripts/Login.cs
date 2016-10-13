@@ -50,13 +50,11 @@ public class Login : MonoBehaviour
                     Debug.Log("CLIENT : 发送数据...");
                     using (MemoryStream mstream = new MemoryStream())
                     {
-                        ProtobufSerializer ps = new ProtobufSerializer();
-                        ps.Serialize(mstream, loginMsg);
+                        ProtoBuf.Serializer.Serialize<Snake3D.Login>(mstream, loginMsg);
+                        mstream.Position = 0;
 
                         MemoryStream ms = new MemoryStream();
-                        //ms.WriteByte(Convert.ToByte(mstream.Length));
-                        //ms.WriteByte(Convert.ToByte(0));
-                        byte[] lens = System.BitConverter.GetBytes((Int16)mstream.Length);
+                        byte[] lens = System.BitConverter.GetBytes((Int16)(mstream.Length+2));
                         ms.Write(lens, 0, lens.Length);
                         byte[] lenId = System.BitConverter.GetBytes((Int16)0);
                         ms.Write(lenId, 0, lenId.Length);
@@ -68,17 +66,23 @@ public class Login : MonoBehaviour
 
                     //接收
                     Debug.Log("CLIENT : 等待响应...");
-
-                    //Snake3D.Login myResponse = ProtoBuf.Serializer.DeserializeWithLengthPrefix<Snake3D.Login>(stream, PrefixStyle.Base128);
-
-                    //string result = string.Format("CLIENT: 成功获取结果, RoomId ={0}, RoomW ={1}, RoomH ={2}, StartX ={3}, StartY ={4}", myResponse.RoomId, myResponse.RoomW, myResponse.RoomH, myResponse.StartX, myResponse.StartY);
-                    //Debug.Log(result);
+                    byte[] buff = new byte[4096];
+                    int readLen = stream.Read(buff, 0, 4096);
+                    byte[] dataLen = new byte[2] {  buff[0],buff[1] };
+                    int msgLen = BitConverter.ToInt16(new byte[2] { buff[0], buff[1] }, 0);
+                    int msgId = BitConverter.ToInt16(new byte[2] { buff[2], buff[3] }, 0);
+                    MemoryStream msgStream = new MemoryStream();
+                    msgStream.Write(buff, 4, msgLen-2);
+                    msgStream.Position = 0;
+                    Snake3D.Login dData = ProtoBuf.Serializer.Deserialize<Snake3D.Login>(msgStream);
+                       
+                    string result = string.Format("CLIENT: 成功获取结果, RoomId ={0}, RoomW ={1}, RoomH ={2}, StartX ={3}, StartY ={4}", dData.RoomId, dData.RoomW, dData.RoomH, dData.StartX, dData.StartY);
+                    Debug.Log(result);
                     //关闭
                     stream.Close();
                 }
                 client.Close();
                 Debug.Log("CLIENT : 关闭...");
-
             }
         }
     }
