@@ -54,12 +54,12 @@ public class Login : MonoBehaviour
                         ps.Serialize(mstream, loginMsg);
 
                         MemoryStream ms = new MemoryStream();
-                        ms.WriteByte(Convert.ToByte(mstream.Length));
-                        ms.WriteByte(Convert.ToByte(0));
-                        //byte[] lens = System.BitConverter.GetBytes((Int16) mstream.Length);
-                        //ms.Write(lens, 0, lens.Length);
-                        //byte[] lenId = System.BitConverter.GetBytes((Int16)0);
-                        //ms.Write(lenId, 0, lenId.Length);
+                        //ms.WriteByte(Convert.ToByte(mstream.Length));
+                        //ms.WriteByte(Convert.ToByte(0));
+                        byte[] lens = System.BitConverter.GetBytes((Int16)mstream.Length);
+                        ms.Write(lens, 0, lens.Length);
+                        byte[] lenId = System.BitConverter.GetBytes((Int16)0);
+                        ms.Write(lenId, 0, lenId.Length);
                         byte[] b = mstream.ToArray();
                         ms.Write(b, 0, b.Length);
                         byte[] s = ms.ToArray();
