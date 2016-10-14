@@ -19,8 +19,11 @@ using Snake3D;
 public class NetManager
 {
     public static readonly NetManager Instance = new NetManager();
+    private ProtobufSerializer serializer;
 
-    private NetManager() { }
+    private NetManager() {
+        serializer = new ProtobufSerializer();
+    }
 
     public void Connect(string ip = GameConfig.serverIP,int port = GameConfig.serverPort)
     {
@@ -78,13 +81,19 @@ public class NetManager
         get { return connected; }
     }
 
-    public void SendMessage(string key,byte[] buff)
+    public void SendMessage(string key,object msg)
     {
         if(!connected)
         {
             Debug.LogError("没有连接到服务器！");
             return;
         }
+
+        byte[] buff = null;
+        MemoryStream stream = new MemoryStream();
+        serializer.Serialize(stream, msg);
+        buff = stream.ToArray();
+
         MemoryStream strm = new MemoryStream();
         byte[] msgLenBytes = System.BitConverter.GetBytes((Int16)(buff.Length + 2));
         strm.Write(msgLenBytes, 0, msgLenBytes.Length);
@@ -124,6 +133,7 @@ public class NetManager
             MemoryStream msgStream = new MemoryStream();
             msgStream.Write(m_buff, 4, msgLen - 2);
             msgStream.Position = 0;
+            msgKey = msgKey.Contains("snake.") ? msgKey.Substring(6) : msgKey;
             Type type = Assembly.GetAssembly(typeof(MsgMsgInit)).GetType("Snake3D." + msgKey, true);
             if (null == type)
             {
@@ -143,7 +153,7 @@ public class NetManager
         }
         catch (Exception ex)
         {
-            Debug.Log("===============: " + ex.Message);
+            Debug.LogError("===============: " + ex.Message);
             if (m_stream != null)
                 m_stream.Dispose();
             m_tcpClient.Close();
