@@ -36,7 +36,11 @@ public class Login : MonoBehaviour
     {
         if (GUILayout.Button("登录"))
         {
-            //NetManager.Instance.SendMessage()
+            NetManager.Instance.Connect();
+            MsgMsgInit msgInit = new MsgMsgInit();
+            MemoryStream stream = new MemoryStream();
+            ProtoBuf.Serializer.Serialize<MsgMsgInit>(stream, msgInit);
+            NetManager.Instance.SendMessage("MsgMsgInit", stream.ToArray());
 
             //Snake3D.Login loginMsg = new Snake3D.Login();
             //loginMsg.AccountId = "meizu";
