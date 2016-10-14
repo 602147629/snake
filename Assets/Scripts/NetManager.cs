@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -41,6 +42,7 @@ public class NetManager
                 return;
             }
             Debug.Log("====成功连接到服务器" + ip + ":" + port);
+            connected = true;
             m_stream = m_tcpClient.GetStream();
         }
     }
@@ -71,13 +73,24 @@ public class NetManager
         }
     }
 
+    public bool Connected
+    {
+        get { return connected; }
+    }
+
     public void SendMessage(string key,byte[] buff)
     {
+        if(!connected)
+        {
+            Debug.LogError("没有连接到服务器！");
+            return;
+        }
         MemoryStream strm = new MemoryStream();
         byte[] msgLenBytes = System.BitConverter.GetBytes((Int16)(buff.Length + 2));
         strm.Write(msgLenBytes, 0, msgLenBytes.Length);
         byte[] msgIdBytes = System.BitConverter.GetBytes(NetIDContainer.GetMessageId(key));
-        strm.Write(msgLenBytes, 0, msgLenBytes.Length);
+        Debug.Log("=======发送：" + key);
+        strm.Write(msgIdBytes, 0, msgIdBytes.Length);
         strm.Write(buff, 0, buff.Length);
 
         byte[] toSendBytes = strm.ToArray();
@@ -103,15 +116,20 @@ public class NetManager
             if (bytesRead == 0)
             {
                 return;
-                //throw new Exception("读取到0字节");
             }
             Int16 msgLen = BitConverter.ToInt16(GetBuff(m_buff, 0, 2),0);
             Int16 msgId = BitConverter.ToInt16(GetBuff(m_buff,2, 2), 0);
             string msgKey = NetIDContainer.GetMessageKey(msgId);
+            Debug.Log("=======接收ID: " + msgId + "  key:" + msgKey);
             MemoryStream msgStream = new MemoryStream();
             msgStream.Write(m_buff, 4, msgLen - 2);
             msgStream.Position = 0;
-            Type type = Type.GetType(msgKey);
+            Type type = Assembly.GetAssembly(typeof(MsgMsgInit)).GetType("Snake3D." + msgKey, true);
+            if (null == type)
+            {
+                Debug.Log("没有类名是： Snake3D." + msgKey + "的类！");
+                return;
+            }
             ProtobufSerializer serializer = new ProtobufSerializer();
             object msg = serializer.Deserialize(msgStream,null,type);
             InvokeCallback(msgId, msg);
@@ -125,6 +143,7 @@ public class NetManager
         }
         catch (Exception ex)
         {
+            Debug.Log("===============: " + ex.Message);
             if (m_stream != null)
                 m_stream.Dispose();
             m_tcpClient.Close();
@@ -155,9 +174,10 @@ public class NetManager
         return retBuff;
     }
 
+    private bool connected = false;
     private TcpClient m_tcpClient;
     private NetworkStream m_stream;
-    private byte[] m_buff;
+    private byte[] m_buff = new byte[BUFF_SIZE];
     private const int BUFF_SIZE= 8192;
-    private Dictionary<Int16, List<Action<object>>> m_netCallbackMap;
+    private Dictionary<Int16, List<Action<object>>> m_netCallbackMap = new Dictionary<short, List<Action<object>>>();
 }
