@@ -1,29 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Rocker : MonoBehaviour {
+public class Rocker : UIBase {
     public GameObject obj;
-    public Camera uiCam;
 
     RectTransform selfRectTrans;
-	// Use this for initialization
-	void Start () {
-        selfRectTrans = GetComponent<RectTransform>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    protected override void OnLoad()
+    {
+        selfRectTrans = transform.GetChild(0).GetComponent<RectTransform>();
+        base.OnLoad();
+    }
+
+    protected override void OnUpdate()
+    {
         if (Input.GetMouseButton(0))
         {
             Vector2 point = Vector2.zero;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(selfRectTrans, Input.mousePosition, uiCam, out point);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(selfRectTrans, Input.mousePosition, UIManager.Instance.UICamera, out point);
             obj.transform.localPosition = new Vector3(point.x, point.y, 0);
             //obj.transform.position = Input.mousePosition;
-            if (Vector3.Distance(obj.transform.localPosition, Vector3.zero) > gameObject.GetComponent<RectTransform>().sizeDelta.x / 2)
+            if (Vector3.Distance(obj.transform.localPosition, Vector3.zero) > selfRectTrans.sizeDelta.x / 2)
             {
-                obj.transform.localPosition = obj.transform.localPosition.normalized * gameObject.GetComponent<RectTransform>().sizeDelta.x / 2;
+                obj.transform.localPosition = obj.transform.localPosition.normalized * selfRectTrans.sizeDelta.x / 2;
             }
-            GameLogin.instance.SetSelfTo(new Vector3(obj.transform.localPosition.x,0, obj.transform.localPosition.y));
+            GameLogin.instance.SetSelfTo(new Vector3(obj.transform.localPosition.x, 0, obj.transform.localPosition.y));
         }
         if (Input.GetMouseButtonUp(0))
         {
@@ -37,5 +38,6 @@ public class Rocker : MonoBehaviour {
         {
             GameLogin.instance.SetSelfLength(GameLogin.instance.m_SelfSnake._surplusLength - 1);
         }
+        base.OnUpdate();
     }
 }

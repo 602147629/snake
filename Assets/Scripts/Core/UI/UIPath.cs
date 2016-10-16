@@ -8,11 +8,11 @@
         string path = "";
         switch(UIName)
         {
-            case UINames.Snake_Room_Select:
+            case UINames.Snake_Room_SelectUI:
                 path = "Prefabs/UI/Room";
                 break;
-            case UINames.LeftMenuUI:
-                path = "Prefabs/UI/2DDrawPen";
+            case UINames.RockerUI:
+                path = "Prefabs/UI/Rocker";
                 break;
             case UINames.LoginUI:
                 path = "Prefabs/UI/LoginUI";

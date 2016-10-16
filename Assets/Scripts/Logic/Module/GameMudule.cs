@@ -52,4 +52,9 @@ public class GameMudule : ModuleBase
         MsgRoomInfo roomInfo = msg as MsgRoomInfo;
         Debug.Log("================: " + roomInfo.RoomList.Count);
     }
+
+    public void SendToEnterRoom()
+    {
+        
+    }
 }

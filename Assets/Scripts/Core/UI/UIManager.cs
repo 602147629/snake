@@ -9,6 +9,7 @@ public delegate void ButtonClickHandler(GameObject obj, int param1,int param2);
 public class UIManager
 {
     public static readonly UIManager Instance = new UIManager();
+    private Camera uiCamera;
 
     private Dictionary<UINames, UIBase> m_AllOpenUI = new Dictionary<UINames, UIBase>();
     private Transform m_uiParent = null;
@@ -18,7 +19,13 @@ public class UIManager
     public void InitUIManager(Transform uiParent)
     {
         m_uiParent = uiParent;
+        uiCamera = uiParent.parent.FindChild("Camera").GetComponent<Camera>();
         inited = true;
+    }
+
+    public Camera UICamera
+    {
+        get { return uiCamera; }
     }
 
     public void OpenUI(UINames uiName, bool closeAll = false)

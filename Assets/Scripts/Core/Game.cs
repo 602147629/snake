@@ -49,7 +49,7 @@ public class Game : MonoBehaviour {
         uiRoot = ui_Root;
         UIManager.Instance.InitUIManager(uiRoot.transform.FindChild("UI"));
         DontDestroyOnLoad(uiRoot);
-        UIManager.Instance.OpenUI(UINames.Snake_Room_Select);
+        UIManager.Instance.OpenUI(UINames.Snake_Room_SelectUI);
     }
 
     public void UnRegisterUpdateObj<T>() where T : IUpdate
