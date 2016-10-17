@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+#if UNITY_5_3
 using UnityEngine.SceneManagement;
+#endif
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -65,7 +67,12 @@ public class Game : MonoBehaviour {
 
     private IEnumerator LoadScene()
     {
-        AsyncOperation opt = SceneManager.LoadSceneAsync(toLoadSceneData.sceneName);
+        AsyncOperation opt = null;
+#if UNITY_5_3
+        opt = SceneManager.LoadSceneAsync(toLoadSceneData.sceneName);
+#else
+        opt = Application.LoadLevelAsync(toLoadSceneData.sceneName);
+#endif
         yield return opt;
         if(null != curScene) curScene.OnRelease();
         curScene = Activator.CreateInstance(toLoadSceneData.sceneType) as SceneBase;
