@@ -55,6 +55,9 @@ public class GameMudule : ModuleBase
 
     public void SendToEnterRoom()
     {
-        
+        MsgRoomEnter msgEnter = new MsgRoomEnter();
+        msgEnter.AccountId = "meizu";
+        msgEnter.RoomId = 1;
+        NetManager.Instance.SendMessage("snake.MsgRoomEnter", msgEnter);
     }
 }

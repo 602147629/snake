@@ -7,10 +7,14 @@ public class RoomSelectedUI : UIBase
 {
     public Button btnThemeRoom;
     public Button btnFreeRoom;
+
+    private GameMudule gameModule;
     protected override void OnLoad()
     {
         UIManager.SetButtonClick(btnThemeRoom.gameObject, OnEnterRoom, 0, 0);
         UIManager.SetButtonClick(btnFreeRoom.gameObject, OnEnterRoom, 1, 0);
+
+        gameModule = ModuleManager.Instance.GetModule<GameMudule>();
         base.OnLoad();
     }
 
@@ -19,6 +23,7 @@ public class RoomSelectedUI : UIBase
         if(0 == param1)
         {
             Game.Instance().CreateScene("Game",typeof(GameScene));
+            gameModule.SendToEnterRoom();
         }
         else
         {
