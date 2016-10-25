@@ -46,7 +46,7 @@ public class GameMudule : ModuleBase
         NetManager.Instance.AddNetCallback("snake.MsgLogin", OnLogin);
         MsgLogin msgLogin = new MsgLogin();
         msgLogin.AccountId = "meizu";
-        NetManager.Instance.SendMessage("MsgLogin", msgLogin);
+        NetManager.Instance.SendMessage("snake.MsgLogin", msgLogin);
     }
 
     void OnLogin(object msg)
