@@ -133,7 +133,7 @@ public class NetManager
             MemoryStream msgStream = new MemoryStream();
             msgStream.Write(m_buff, 4, msgLen - 2);
             msgStream.Position = 0;
-            msgKey = msgKey.Contains("snake.") ? msgKey.Substring(6) : msgKey;
+            //msgKey = msgKey.Contains("snake.") ? msgKey.Substring(6) : msgKey;
             Type type = Assembly.GetAssembly(typeof(MsgMsgInit)).GetType("Snake3D." + msgKey, true);
             if (null == type)
             {

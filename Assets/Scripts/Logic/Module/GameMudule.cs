@@ -18,8 +18,8 @@ public class GameMudule : ModuleBase
     public override void OnRelease()
     {
         NetManager.Instance.RemoveNetCallback("MsgMsgInit", OnNetMsgInit);
-        NetManager.Instance.RemoveNetCallback("snake.MsgRoomInfo", OnNetGetRoomInfo);
-        NetManager.Instance.RemoveNetCallback("snake.MsgLogin", OnLogin);
+        NetManager.Instance.RemoveNetCallback("MsgRoomInfo", OnNetGetRoomInfo);
+        NetManager.Instance.RemoveNetCallback("MsgLogin", OnLogin);
     }
 
     void GetMsgConfig()
@@ -43,10 +43,10 @@ public class GameMudule : ModuleBase
 
     void Login()
     {
-        NetManager.Instance.AddNetCallback("snake.MsgLogin", OnLogin);
+        NetManager.Instance.AddNetCallback("MsgLogin", OnLogin);
         MsgLogin msgLogin = new MsgLogin();
         msgLogin.AccountId = "meizu";
-        NetManager.Instance.SendMessage("snake.MsgLogin", msgLogin);
+        NetManager.Instance.SendMessage("MsgLogin", msgLogin);
     }
 
     void OnLogin(object msg)
@@ -56,9 +56,9 @@ public class GameMudule : ModuleBase
 
     void GetRoomInfo()
     {
-        NetManager.Instance.AddNetCallback("snake.MsgRoomInfo", OnNetGetRoomInfo);
+        NetManager.Instance.AddNetCallback("MsgRoomInfo", OnNetGetRoomInfo);
         MsgRoomInfo roomInfo = new MsgRoomInfo();
-        NetManager.Instance.SendMessage("snake.MsgRoomInfo", roomInfo);
+        NetManager.Instance.SendMessage("MsgRoomInfo", roomInfo);
     }
 
     void OnNetGetRoomInfo(object msg)
@@ -71,6 +71,6 @@ public class GameMudule : ModuleBase
         MsgRoomEnter msgEnter = new MsgRoomEnter();
         msgEnter.AccountId = "meizu";
         msgEnter.RoomId = 1;
-        NetManager.Instance.SendMessage("snake.MsgRoomEnter", msgEnter);
+        NetManager.Instance.SendMessage("MsgRoomEnter", msgEnter);
     }
 }
