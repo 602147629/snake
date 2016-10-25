@@ -19,6 +19,7 @@ public class GameMudule : ModuleBase
     {
         NetManager.Instance.RemoveNetCallback("MsgMsgInit", OnNetMsgInit);
         NetManager.Instance.RemoveNetCallback("snake.MsgRoomInfo", OnNetGetRoomInfo);
+        NetManager.Instance.RemoveNetCallback("snake.MsgLogin", OnLogin);
     }
 
     void GetMsgConfig()
@@ -37,6 +38,19 @@ public class GameMudule : ModuleBase
             NetIDContainer.AddIdName((Int16)item.MsgId, item.MsgName);
             NetIDContainer.AddNameId(item.MsgName, (Int16)item.MsgId);
         }
+        Login();
+    }
+
+    void Login()
+    {
+        NetManager.Instance.AddNetCallback("snake.MsgLogin", OnLogin);
+        MsgLogin msgLogin = new MsgLogin();
+        msgLogin.AccountId = "meizu";
+        NetManager.Instance.SendMessage("MsgLogin", msgLogin);
+    }
+
+    void OnLogin(object msg)
+    {
         GetRoomInfo();
     }
 
@@ -50,7 +64,6 @@ public class GameMudule : ModuleBase
     void OnNetGetRoomInfo(object msg)
     {
         MsgRoomInfo roomInfo = msg as MsgRoomInfo;
-        Debug.Log("================: " + roomInfo.RoomList.Count);
     }
 
     public void SendToEnterRoom()
