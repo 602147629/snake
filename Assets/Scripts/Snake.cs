@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Snake
 {
-    public int _surplusLength;
+    public uint _surplusLength;
     public float _speed;
     public string _name;
     private GameObject _parent;
@@ -12,7 +12,7 @@ public class Snake
     public List<Vector3> _targetPos = new List<Vector3>();
 
     // Use this for initialization
-    public void Init(string name, Vector3 pos, int surplusLength, float speed)
+    public void Init(string name, Vector3 pos, uint surplusLength, float speed)
     {
         _name = name;
         _speed = speed;
@@ -69,7 +69,7 @@ public class Snake
             _targetPos.RemoveRange(idx, _targetPos.Count - idx);
         }
     }
-    public void SetLength(int length)
+    public void SetLength(uint length)
     {
         _surplusLength = length;
         string path = ResConfig.THEME_PATH + UserLogic.Instance.ThemeUsing + "/body";

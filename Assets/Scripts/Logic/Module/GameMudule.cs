@@ -7,6 +7,12 @@ using UnityEngine;
 [Module("GameMudule", true)]
 public class GameMudule : ModuleBase
 {
+	public MsgRoomEnter roomEnterData;
+	public List<Snake> m_OtherSnakeObj;
+	public Snake m_SelfSnake;
+	private Vector3 m_ToDirection;
+	private GameView m_GameView;
+
     public override void OnLoad()
     {
         NetManager.Instance.AddNetCallback("MsgMsgInit",OnNetMsgInit);
@@ -20,6 +26,7 @@ public class GameMudule : ModuleBase
         NetManager.Instance.RemoveNetCallback("MsgMsgInit", OnNetMsgInit);
         NetManager.Instance.RemoveNetCallback("MsgRoomInfo", OnNetGetRoomInfo);
         NetManager.Instance.RemoveNetCallback("MsgLogin", OnLogin);
+		NetManager.Instance.RemoveNetCallback("MsgRoomEnter",OnGetMessageRoomBack);
     }
 
     void GetMsgConfig()
@@ -68,9 +75,47 @@ public class GameMudule : ModuleBase
 
     public void SendToEnterRoom()
     {
+		NetManager.Instance.AddNetCallback("MsgRoomEnter",OnGetMessageRoomBack);
         MsgRoomEnter msgEnter = new MsgRoomEnter();
         msgEnter.AccountId = "meizu";
         msgEnter.RoomId = 1;
         NetManager.Instance.SendMessage("MsgRoomEnter", msgEnter);
     }
+	void OnGetMessageRoomBack(object msg)
+	{
+		roomEnterData = msg as MsgRoomEnter;
+	}
+
+
+	public void MsgExitRoom(){
+		MsgExitRoom msgExit = new Snake3D.MsgExitRoom ();
+		NetManager.Instance.SendMessage("MsgExitRoom",msgExit);
+	}
+
+
+	public void Init(GameView gv)
+	{
+		m_GameView = gv;
+		m_ToDirection = new Vector3(0, 0, 1);
+	}
+	
+	// Update is called once per frame
+	public void Update(float deltaTime)
+	{
+		this.m_SelfSnake.Move(m_ToDirection, deltaTime);
+	}
+	public Snake CreateSnake(string name,Vector3 pos,UInt32 SetSelfLength,float speed)
+	{
+		Snake snake = new Snake();
+		snake.Init(name, pos,SetSelfLength,speed);
+		return snake;
+	}
+	public void SetSelfTo(Vector3 to)
+	{
+		m_ToDirection = to;
+	}
+	public void SetSelfLength(UInt32 length)
+	{
+		m_SelfSnake.SetLength(length);
+	}
 }

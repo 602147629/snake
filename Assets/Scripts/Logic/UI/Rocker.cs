@@ -10,10 +10,11 @@ public class Rocker : UIBase
     public Vector2 toPoint = new Vector2(0, 1);
     RectTransform selfRectTrans;
     private List<Vector2> mList;
-
+	private GameMudule gameMudule;
     protected override void OnLoad()
     {
         selfRectTrans = transform.GetChild(0).GetComponent<RectTransform>();
+		gameMudule = ModuleManager.Instance.GetModule<GameMudule>();
         base.OnLoad();
     }
 
@@ -31,29 +32,7 @@ public class Rocker : UIBase
             {
                 obj.transform.localPosition = obj.transform.localPosition.normalized * selfRectTrans.sizeDelta.x / 2;
             }
-            //计算 蛇上次行走的方向跟本次摇杆方向的夹角
-            float angele = Vector2.Angle(toPoint, point);
-
-            if (angele < 20)
-            {
-                toPoint = point;
-                GameLogin.instance.SetSelfTo(new Vector3(toPoint.x, 0, toPoint.y));
-            }
-            //角度大于20 让蛇上次行走的方向 渐变到本次摇杆方向的夹角 每次加10
-            else if (Vector3.Cross(new Vector3(toPoint.x, 0, toPoint.y), new Vector3(point.x, 0, point.y)).y > 0)
-            {
-                toPoint = RotationMatrix(toPoint, 10);
-               // Debug.Log("旋转之前的向量为-------" + toPoint);
-            }
-
-            else
-            {
-
-                toPoint = RotationMatrix(toPoint, -10);
-            }
-
-
-            GameLogin.instance.SetSelfTo(new Vector3(toPoint.x, 0, toPoint.y));
+			gameMudule.SetSelfTo(new Vector3(obj.transform.localPosition.x, 0,obj.transform.localPosition.y));
 
 
         }
@@ -66,11 +45,11 @@ public class Rocker : UIBase
         }
         if (Input.GetKeyDown(KeyCode.A))
         {
-            GameLogin.instance.SetSelfLength(GameLogin.instance.m_SelfSnake._surplusLength + 1);
+            gameMudule.SetSelfLength(gameMudule.m_SelfSnake._surplusLength + 1);
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
-            GameLogin.instance.SetSelfLength(GameLogin.instance.m_SelfSnake._surplusLength - 1);
+            gameMudule.SetSelfLength(gameMudule.m_SelfSnake._surplusLength - 1);
         }
         base.OnUpdate();
     }

@@ -23,7 +23,7 @@ public class GameLogin
     {
         GameLogin.instance.m_SelfSnake.Move(m_ToDirection, deltaTime);
     }
-    public Snake CreateSnake(string name)
+    public Snake CreateSnake(string name,Vector3 pos,int SetSelfLength,float speed)
     {
         Snake snake = new Snake();
         snake.Init(name, Vector3.zero, 20, 0.3f);
@@ -33,7 +33,7 @@ public class GameLogin
     {
         m_ToDirection = to;
     }
-    public void SetSelfLength(int length)
+    public void SetSelfLength(uint length)
     {
         m_SelfSnake.SetLength(length);
     }
