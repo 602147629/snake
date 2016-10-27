@@ -50,6 +50,14 @@ public class Rocker : UIBase
         {
             gameMudule.SetSelfLength(gameMudule.m_SelfSnake._surplusLength - 1);
         }
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            gameMudule.setFods();
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            gameMudule.deleteFood("1");
+        }
         base.OnUpdate();
     }
 
