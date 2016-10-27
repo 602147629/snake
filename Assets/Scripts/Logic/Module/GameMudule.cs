@@ -16,6 +16,7 @@ public class GameMudule : ModuleBase
 	private Vector3 m_ToDirection;
 	private GameView m_GameView;
 	public string UserNmae;
+    public Dictionary<Int16, FoodItem> mFoodList;
     public override void OnLoad()
     {
 	#if UNITY_ANDROID
@@ -82,6 +83,7 @@ public class GameMudule : ModuleBase
     void OnNetGetRoomInfo(object msg)
     {
         MsgRoomInfo roomInfo = msg as MsgRoomInfo;
+        //FoodNetInit();
     }
 
     public void SendToEnterRoom()
@@ -95,6 +97,8 @@ public class GameMudule : ModuleBase
 	void OnGetMessageRoomBack(object msg)
 	{
 		roomEnterData = msg as MsgRoomEnter;
+	    //getFoodInfo();
+
 	}
 	
 	public void MsgExitRoom(){
@@ -156,8 +160,39 @@ public class GameMudule : ModuleBase
 	{
 		m_SelfSnake.SetLength(length);
 	}
-	//获取mac地址
-	public static string GetMacAddressPCIOS()
+
+    public void getFoodInfo()
+    {
+        Debug.Log("88888888888888888888888888888");
+        NetManager.Instance.AddNetCallback("MsgAddFood", FoodNetInit);
+    }
+
+    public void FoodNetInit(object msg)
+    {
+        Debug.Log("------链接成功--++++++");
+        MsgAddFood initMsg = msg as MsgAddFood;
+        List<MsgFoodStruct> msgConfs = initMsg.FoodList;
+        for (int i = 0; i < msgConfs.Count; i++)
+        {
+            MsgFoodStruct item = msgConfs[i];
+
+            if (mFoodList == null) ;
+            {
+                mFoodList = new Dictionary<Int16, FoodItem>();
+            }
+            FoodItem items = new FoodItem();
+            items.SetId((Int16)item.Id);
+            items.SetPosX((float)item.PosX);
+            items.SetPosY((float)item.PosY);
+            items.SetRadius((float)item.Radius);
+            items.SetScore((Int16)item.Score);
+            mFoodList.Add(items.Ids, items);
+        }
+        Debug.Log("------mFoodList--++++++"+ mFoodList.Count);
+    }
+
+    //获取mac地址
+    public static string GetMacAddressPCIOS()
 	{
 		string physicalAddress = "";  
 				

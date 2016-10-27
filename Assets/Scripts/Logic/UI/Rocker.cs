@@ -50,11 +50,11 @@ public class Rocker : UIBase
         }
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            gameMudule.setFods();
+           // gameMudule.se();
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
-            gameMudule.deleteFood("1");
+           // gameMudule.deleteFood("1");
         }
         base.OnUpdate();
     }
