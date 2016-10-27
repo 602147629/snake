@@ -13,7 +13,6 @@ public class RoomSelectedUI : UIBase
     {
         UIManager.SetButtonClick(btnThemeRoom.gameObject, OnEnterRoom, 0, 0);
         UIManager.SetButtonClick(btnFreeRoom.gameObject, OnEnterRoom, 1, 0);
-
         gameModule = ModuleManager.Instance.GetModule<GameMudule>();
         base.OnLoad();
     }

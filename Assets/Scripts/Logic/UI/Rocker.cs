@@ -33,8 +33,7 @@ public class Rocker : UIBase
                 obj.transform.localPosition = obj.transform.localPosition.normalized * selfRectTrans.sizeDelta.x / 2;
             }
 			gameMudule.SetSelfTo(new Vector3(obj.transform.localPosition.x, 0,obj.transform.localPosition.y));
-
-
+//			gameMudule.MsgMove(obj.transform.localPosition.x,obj.transform.localPosition.y);
         }
 
         if (
@@ -50,6 +49,14 @@ public class Rocker : UIBase
         if (Input.GetKeyDown(KeyCode.S))
         {
             gameMudule.SetSelfLength(gameMudule.m_SelfSnake._surplusLength - 1);
+        }
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            gameMudule.setFods();
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            gameMudule.deleteFood("1");
         }
         base.OnUpdate();
     }
