@@ -27,7 +27,7 @@ public class GameLogic
     // Update is called once per frame
     public void Update(float deltaTime)
     {
-        GameLogic.instance.m_SelfSnake.Move(m_ToDirection, deltaTime);
+        GameLogic.instance.m_SelfSnake.Move(m_ToDirection);
     }
 	public Snake CreateSnake(string name)
     {

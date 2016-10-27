@@ -10,6 +10,7 @@ using System.Collections;
 public class GameMudule : ModuleBase
 {
 	public MsgRoomEnter roomEnterData;
+	public MsgAddTargetPos AddTargetPos;
 	public List<Snake> m_OtherSnakeObj;
 	public Snake m_SelfSnake;
 	private Vector3 m_ToDirection;
@@ -36,6 +37,7 @@ public class GameMudule : ModuleBase
         NetManager.Instance.RemoveNetCallback("MsgRoomInfo", OnNetGetRoomInfo);
         NetManager.Instance.RemoveNetCallback("MsgLogin", OnLogin);
 		NetManager.Instance.RemoveNetCallback("MsgRoomEnter",OnGetMessageRoomBack);
+		NetManager.Instance.RemoveNetCallback("MsgAddTargetPos",MoveToNewPositaion);
     }
 
     void GetMsgConfig()
@@ -94,14 +96,14 @@ public class GameMudule : ModuleBase
 	{
 		roomEnterData = msg as MsgRoomEnter;
 	}
-
-
+	
 	public void MsgExitRoom(){
 		MsgExitRoom msgExit = new Snake3D.MsgExitRoom ();
 		NetManager.Instance.SendMessage("MsgExitRoom",msgExit);
 	}
 
 	public void MsgMove(float x,float y){
+		NetManager.Instance.AddNetCallback("MsgAddTargetPos",MoveToNewPositaion);
 		MsgMove Move = new MsgMove ();
 		MsgPosInfo PosInfo = new MsgPosInfo ();
 		PosInfo.PosX = x;
@@ -110,7 +112,16 @@ public class GameMudule : ModuleBase
 		Move.TargetPos =PosInfo;
 		NetManager.Instance.SendMessage("MsgMove",Move);
 	}
-
+	private void MoveToNewPositaion(object msg){
+		 AddTargetPos = msg as MsgAddTargetPos;
+		List <MsgPosStruct> PosStruct = AddTargetPos.PosList;
+		for (int i=0; i<PosStruct.Count; i++) {
+			if(PosStruct[i].AccountId==UserNmae){
+				Vector3 MsgDirection = new Vector3 (PosStruct [i].PosX, 0, PosStruct [i].PosY);
+				this.m_SelfSnake.Move (MsgDirection);
+			}
+		}
+	}
 	//初始化蛇的信息
 	public void Init(GameView gv)
 	{
@@ -129,7 +140,7 @@ public class GameMudule : ModuleBase
 	// Update is called once per frame
 	public void Update(float deltaTime)
 	{
-		this.m_SelfSnake.Move(m_ToDirection, deltaTime);
+//		this.m_SelfSnake.Move(m_ToDirection);
 	}
 	public Snake CreateSnake(string name,Vector3 pos,UInt32 SetSelfLength,float speed)
 	{

@@ -26,14 +26,12 @@ public class Rocker : UIBase
             RectTransformUtility.ScreenPointToLocalPointInRectangle(selfRectTrans, Input.mousePosition,
                 UIManager.Instance.UICamera, out point);
             obj.transform.localPosition = new Vector3(point.x, point.y, 0);
-
-
             if (Vector3.Distance(obj.transform.localPosition, Vector3.zero) > selfRectTrans.sizeDelta.x / 2)
             {
                 obj.transform.localPosition = obj.transform.localPosition.normalized * selfRectTrans.sizeDelta.x / 2;
             }
-			gameMudule.SetSelfTo(new Vector3(obj.transform.localPosition.x, 0,obj.transform.localPosition.y));
-//			gameMudule.MsgMove(obj.transform.localPosition.x,obj.transform.localPosition.y);
+//			gameMudule.SetSelfTo(new Vector3(obj.transform.localPosition.x, 0,obj.transform.localPosition.y));
+			gameMudule.MsgMove(obj.transform.localPosition.x,obj.transform.localPosition.y);
         }
 
         if (

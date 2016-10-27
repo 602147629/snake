@@ -23,7 +23,7 @@ public class Snake
         CreateHead();
         SetLength(surplusLength);
     }
-    public void Move(Vector3 tarPos, float deltaTime)
+    public void Move(Vector3 tarPos)
     {
         _targetPos.Insert(0, _targetPos[0] + tarPos.normalized * _speed);
     }

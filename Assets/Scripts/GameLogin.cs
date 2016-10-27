@@ -21,7 +21,7 @@ public class GameLogin
     // Update is called once per frame
     public void Update(float deltaTime)
     {
-        GameLogin.instance.m_SelfSnake.Move(m_ToDirection, deltaTime);
+        GameLogin.instance.m_SelfSnake.Move(m_ToDirection);
     }
     public Snake CreateSnake(string name,Vector3 pos,int SetSelfLength,float speed)
     {
