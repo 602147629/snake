@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Snake3D;
 using System.IO;
 using UnityEngine;
+using System.Net.NetworkInformation;
+using System.Collections;
 
 [Module("GameMudule", true)]
 public class GameMudule : ModuleBase
@@ -12,9 +14,16 @@ public class GameMudule : ModuleBase
 	public Snake m_SelfSnake;
 	private Vector3 m_ToDirection;
 	private GameView m_GameView;
-
+	public string UserNmae;
     public override void OnLoad()
     {
+	#if UNITY_ANDROID
+	private AndroidJavaObject javaObject = null;
+	private AndroidJavaClass javaClass = null;
+	javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+	javaObject = javaClass.GetStatic<AndroidJavaObject>("currentActivity");
+	#endif
+		UserNmae = GetMacAddressPCIOS ();
         NetManager.Instance.AddNetCallback("MsgMsgInit",OnNetMsgInit);
         NetManager.Instance.Connect();
         GetMsgConfig();
@@ -52,7 +61,7 @@ public class GameMudule : ModuleBase
     {
         NetManager.Instance.AddNetCallback("MsgLogin", OnLogin);
         MsgLogin msgLogin = new MsgLogin();
-        msgLogin.AccountId = "meizu";
+		msgLogin.AccountId = UserNmae;
         NetManager.Instance.SendMessage("MsgLogin", msgLogin);
     }
 
@@ -77,7 +86,7 @@ public class GameMudule : ModuleBase
     {
 		NetManager.Instance.AddNetCallback("MsgRoomEnter",OnGetMessageRoomBack);
         MsgRoomEnter msgEnter = new MsgRoomEnter();
-        msgEnter.AccountId = "meizu";
+		msgEnter.AccountId = UserNmae;
         msgEnter.RoomId = 1;
         NetManager.Instance.SendMessage("MsgRoomEnter", msgEnter);
     }
@@ -92,11 +101,29 @@ public class GameMudule : ModuleBase
 		NetManager.Instance.SendMessage("MsgExitRoom",msgExit);
 	}
 
+	public void MsgMove(float x,float y){
+		MsgMove Move = new MsgMove ();
+		MsgPosInfo PosInfo = new MsgPosInfo ();
+		PosInfo.PosX = x;
+		PosInfo.PosY = y;
+		Move.AccountId = UserNmae;
+		Move.TargetPos =PosInfo;
+		NetManager.Instance.SendMessage("MsgMove",Move);
+	}
 
+	//初始化蛇的信息
 	public void Init(GameView gv)
 	{
 		m_GameView = gv;
-		m_ToDirection = new Vector3(0, 0, 1);
+		if (roomEnterData == null) {
+			m_ToDirection = new Vector3 (0, 0, 1);
+		} else {
+			for (int i=0; i<roomEnterData.PlayerList.Count; i++) {
+				if(UserNmae==roomEnterData.PlayerList[i].AccountId){
+					m_ToDirection=new Vector3(roomEnterData.PlayerList[i].DirectionX,0,roomEnterData.PlayerList[i].DirectionY);
+				}
+			}
+		}
 	}
 	
 	// Update is called once per frame
@@ -118,4 +145,33 @@ public class GameMudule : ModuleBase
 	{
 		m_SelfSnake.SetLength(length);
 	}
+	//获取mac地址
+	public static string GetMacAddressPCIOS()
+	{
+		string physicalAddress = "";  
+				
+		NetworkInterface[] nice = NetworkInterface.GetAllNetworkInterfaces();  
+				
+		foreach (NetworkInterface adaper in nice)  
+		{  
+			if (adaper.Description == "en0")  
+			{  
+				physicalAddress = adaper.GetPhysicalAddress().ToString();  
+				break;
+			}  
+			else  
+			{  
+				physicalAddress = adaper.GetPhysicalAddress().ToString();  
+				if (physicalAddress == null) {
+					#if UNITY_ANDROID
+					physicalAddress=javaObject.Call< string >("GetDevId");
+					#endif
+				}else if (physicalAddress != "")  
+					{  
+						break;  
+					};  
+			} 
+		}  
+		return physicalAddress;  
+		}  
 }
