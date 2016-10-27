@@ -112,6 +112,7 @@ public class GameMudule : ModuleBase
 		Move.TargetPos =PosInfo;
 		NetManager.Instance.SendMessage("MsgMove",Move);
 	}
+<<<<<<< HEAD
 	private void MoveToNewPositaion(object msg){
 		 AddTargetPos = msg as MsgAddTargetPos;
 		List <MsgPosStruct> PosStruct = AddTargetPos.PosList;
@@ -124,6 +125,19 @@ public class GameMudule : ModuleBase
 	}
 	//初始化蛇的信息
 	public void Init(GameView gv)
+=======
+    public void setFods()
+    {
+        Food.Instance.FoodAppear();
+    }
+
+    public void deleteFood(String keys)
+    {
+        Food.Instance.FoodDisapper(keys);
+    }
+    //初始化蛇的信息
+    public void Init(GameView gv)
+>>>>>>> 47e2c788782138b4357ee9a3db5187b758ac46ed
 	{
 		m_GameView = gv;
 		if (roomEnterData == null) {
