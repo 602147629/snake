@@ -70,6 +70,13 @@ public class NetManager
         }
     }
 
+    public void DisConnect()
+    {
+        if (m_stream != null)
+            m_stream.Dispose();
+        m_tcpClient.Close();
+    }
+
     public void AddNetCallback(string key,Action<object> callback)
     {
         //Int16 id = NetIDContainer.GetMessageId(key);

@@ -24,6 +24,12 @@ public class Game : MonoBehaviour {
         ModuleManager.Instance.Init();
         InitUIRoot();
 	}
+
+    void OnDestroy()
+    {
+        Debug.Log("pppppppppppppppppppppppppppppppp");
+        NetManager.Instance.DisConnect();
+    }
 	
 	void Update ()
     {
