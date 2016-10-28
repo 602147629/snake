@@ -143,28 +143,36 @@ public class NetManager
             {
                 bytesRead = m_stream.EndRead(ar);
             }
-            Int16 msgLen = BitConverter.ToInt16(GetBuff(m_buff, 0, 2),0);
-            Int16 msgId = BitConverter.ToInt16(GetBuff(m_buff,2, 2), 0);
-            string msgKey = NetIDContainer.GetMessageKey(msgId);
-
-            Debug.Log("=======接收ID: " + msgId + "  key:" + msgKey);
-            MemoryStream msgStream = new MemoryStream();
-            msgStream.Write(m_buff, 4, msgLen - 2);
-            msgStream.Position = 0;
-            Type type = Assembly.GetAssembly(typeof(MsgMsgInit)).GetType("Snake3D." + msgKey, true);
-            if (null == type)
+            int readIdx = 0;
+            while(true)
             {
-                Debug.Log("没有类名是： Snake3D." + msgKey + "的类！");
-                return;
+                Int16 msgLen = BitConverter.ToInt16(GetBuff(m_buff, readIdx, 2),0);
+                Int16 msgId = BitConverter.ToInt16(GetBuff(m_buff, readIdx + 2, 2), 0);
+                if (msgLen + readIdx >= bytesRead) break;
+                string msgKey = NetIDContainer.GetMessageKey(msgId);
+
+                Debug.Log("=======接收ID: " + msgId + "  key:" + msgKey);
+                MemoryStream msgStream = new MemoryStream();
+                msgStream.Write(m_buff, readIdx + 4, msgLen - 2);
+                msgStream.Position = 0;
+                Type type = Assembly.GetAssembly(typeof(MsgMsgInit)).GetType("Snake3D." + msgKey, true);
+                if (null == type)
+                {
+                    Debug.Log("没有类名是： Snake3D." + msgKey + "的类！");
+                    return;
+                }
+                ProtobufSerializer serializer = new ProtobufSerializer();
+                object msg = serializer.Deserialize(msgStream, null, type);
+                InvokeCallback(msgKey, msg);
+                if ("MsgError" == msgKey)
+                {
+                    MsgError err = msg as MsgError;
+                    Debug.Log("========MsgError=======" + err.ErrorIdx);
+                }
+                readIdx += msgLen + 2;
+                if (readIdx == bytesRead) break;
             }
-            ProtobufSerializer serializer = new ProtobufSerializer();
-            object msg = serializer.Deserialize(msgStream,null,type);
-            InvokeCallback(msgKey, msg);
-			if("MsgError" == msgKey)
-			{
-				MsgError err = msg as MsgError;
-				Debug.Log("========MsgError=======" + err.ErrorIdx);
-			}
+
             Array.Clear(m_buff, 0, m_buff.Length);      // 清空缓存，避免脏读
             lock (m_stream)
             {
