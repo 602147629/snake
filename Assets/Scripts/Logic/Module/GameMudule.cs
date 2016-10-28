@@ -16,7 +16,7 @@ public class GameMudule : ModuleBase
 	private Vector3 m_ToDirection;
 	private GameView m_GameView;
 	public string UserNmae;
-    public Dictionary<Int16, FoodItem> mFoodList;
+    public Dictionary<Int32, FoodItem> mFoodList;
     public override void OnLoad()
     {
 	#if UNITY_ANDROID
@@ -97,7 +97,7 @@ public class GameMudule : ModuleBase
 	void OnGetMessageRoomBack(object msg)
 	{
 		roomEnterData = msg as MsgRoomEnter;
-	    //getFoodInfo();
+	    getFoodInfo();
 
 	}
 	
@@ -174,15 +174,17 @@ public class GameMudule : ModuleBase
 
             if (mFoodList == null) ;
             {
-                mFoodList = new Dictionary<Int16, FoodItem>();
+                mFoodList = new Dictionary<Int32, FoodItem>();
             }
             FoodItem items = new FoodItem();
-            items.SetId((Int16)item.Id);
+            items.SetId((Int32)item.Id);
             items.SetPosX((float)item.PosX);
             items.SetPosY((float)item.PosY);
             items.SetRadius((float)item.Radius);
-            items.SetScore((Int16)item.Score);
+            items.SetScore((Int32)item.Score);
+            Food.Instance.FoodAppear(items);
             mFoodList.Add(items.Ids, items);
+            
         }
         Debug.Log("------mFoodList--++++++"+ mFoodList.Count);
     }
