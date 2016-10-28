@@ -15,6 +15,10 @@ public class FoodMoudle : ModuleBase
     {
         NetManager.Instance.AddNetCallback("MsgAddFood", FoodNetInit);
         NetManager.Instance.AddNetCallback("MsgDelFood", FoodNetDel);
+        if (mFoodList == null) ;
+        {
+            mFoodList = new Dictionary<Int32, FoodItem>();
+        }
     }
 
     public override void OnRelease()
@@ -28,16 +32,9 @@ public class FoodMoudle : ModuleBase
         Debug.Log("+++++++链接成功28--++++++");
         MsgAddFood initMsg = msg as MsgAddFood;
         List<MsgFoodStruct> msgConfs = initMsg.FoodList;
-
-       // Debug.Log("+++++++msgConfs--++++++"+ initMsg.FoodList.Count);
         for (int i = 0; i < msgConfs.Count; i++)
         {
             MsgFoodStruct item = msgConfs[i];
-
-            if (mFoodList == null) ;
-            {
-                mFoodList = new Dictionary<Int32, FoodItem>();
-            }
             FoodItem items = new FoodItem();
             items.SetId((Int32)item.Id);
             items.SetPosX((float)item.PosX);
@@ -48,8 +45,7 @@ public class FoodMoudle : ModuleBase
             Debug.Log("------mFoodList--++++++" + mFoodList.Count);
             notifyAddFood(items.GetId()+"",items);
         }
-       // Debug.Log("+++++++链接成功48--++++++");
-        
+ 
     }
  
     public void FoodNetDel(object msg)
