@@ -25,7 +25,8 @@ public class Snake
     }
     public void Move(Vector3 tarPos)
     {
-        _targetPos.Insert(0, _targetPos[0] + tarPos.normalized * _speed);
+//      _targetPos.Insert(0, _targetPos[0] + tarPos.normalized * _speed);
+		_targetPos.Insert(0,tarPos);
     }
     public void Update()
     {

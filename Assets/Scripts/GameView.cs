@@ -16,7 +16,7 @@ public class GameView : MonoBehaviour {
 		} else {
 			for (int i=0; i<EnterInfo.PlayerList.Count; i++) {
 				Vector3 StartVector=new Vector3(EnterInfo.PlayerList[i].DirectionX,0,EnterInfo.PlayerList[i].DirectionY);
-				gameMudule.m_SelfSnake = gameMudule.CreateSnake (EnterInfo.PlayerList[i].AccountId, StartVector,EnterInfo.PlayerList[i].SurplusLength,EnterInfo.PlayerList[i].Speed);
+				gameMudule.m_SelfSnake = gameMudule.CreateSnake (EnterInfo.PlayerList[i].AccountId, StartVector,EnterInfo.PlayerList[i].SurplusLength,EnterInfo.PlayerList[i].Speed*0.005f);
 //				gameMudule.m_SelfSnake = gameMudule.CreateSnake ("123", StartVector,10,1);
 			}
 		}
@@ -24,7 +24,6 @@ public class GameView : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        gameMudule.Update(Time.deltaTime);
 		gameMudule.m_SelfSnake.Update();
     }
 

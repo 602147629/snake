@@ -142,10 +142,6 @@ public class GameMudule : ModuleBase
 	}
 	
 	// Update is called once per frame
-	public void Update(float deltaTime)
-	{
-//		this.m_SelfSnake.Move(m_ToDirection);
-	}
 	public Snake CreateSnake(string name,Vector3 pos,UInt32 SetSelfLength,float speed)
 	{
 		Snake snake = new Snake();
