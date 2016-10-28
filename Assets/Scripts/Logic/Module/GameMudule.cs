@@ -26,6 +26,10 @@ public class GameMudule : ModuleBase
 	#endif
 		UserNmae = GetMacAddressPCIOS ();
         NetManager.Instance.AddNetCallback("MsgMsgInit",OnNetMsgInit);
+		NetManager.Instance.AddNetCallback("MsgLogin", OnLogin);
+		NetManager.Instance.AddNetCallback("MsgRoomInfo", OnNetGetRoomInfo);
+		NetManager.Instance.AddNetCallback("MsgRoomEnter",OnGetMessageRoomBack);
+		NetManager.Instance.AddNetCallback("MsgAddTargetPos",MoveToNewPositaion);
         NetManager.Instance.Connect();
         GetMsgConfig();
         
@@ -61,7 +65,6 @@ public class GameMudule : ModuleBase
 
     void Login()
     {
-        NetManager.Instance.AddNetCallback("MsgLogin", OnLogin);
         MsgLogin msgLogin = new MsgLogin();
 		msgLogin.AccountId = UserNmae;
         NetManager.Instance.SendMessage("MsgLogin", msgLogin);
@@ -74,7 +77,6 @@ public class GameMudule : ModuleBase
 
     void GetRoomInfo()
     {
-        NetManager.Instance.AddNetCallback("MsgRoomInfo", OnNetGetRoomInfo);
         MsgRoomInfo roomInfo = new MsgRoomInfo();
         NetManager.Instance.SendMessage("MsgRoomInfo", roomInfo);
     }
@@ -87,7 +89,6 @@ public class GameMudule : ModuleBase
 
     public void SendToEnterRoom()
     {
-		NetManager.Instance.AddNetCallback("MsgRoomEnter",OnGetMessageRoomBack);
         MsgRoomEnter msgEnter = new MsgRoomEnter();
 		msgEnter.AccountId = UserNmae;
         msgEnter.RoomId = 1;
@@ -107,7 +108,6 @@ public class GameMudule : ModuleBase
 	}
 
 	public void MsgMove(float x,float y){
-		NetManager.Instance.AddNetCallback("MsgAddTargetPos",MoveToNewPositaion);
 		MsgMove Move = new MsgMove ();
 		MsgPosInfo PosInfo = new MsgPosInfo ();
 		PosInfo.PosX = x;
@@ -150,11 +150,8 @@ public class GameMudule : ModuleBase
 	// Update is called once per frame
 	public Snake CreateSnake(string name,Vector3 pos,UInt32 SetSelfLength,float speed)
 	{
-		Debug.Log("!1111111111111111111111");
 		Snake snake = new Snake();
-		Debug.Log("!222222222222222222222");
 		snake.Init(name, pos,SetSelfLength,speed);
-		Debug.Log("!33333333333333333333333");
 		return snake;
 	}
 	public void SetSelfTo(Vector3 to)
