@@ -25,6 +25,21 @@ public class NetManager
         serializer = new ProtobufSerializer();
     }
 
+    public void Update()
+    {
+        int count = m_callMap.Count;
+        while(count-- > 0)
+        {
+            NetCall call = m_callMap[count];
+            for(int i = 0; i < call.calls.Count; i++)
+            {
+                call.calls[i].Invoke(call.msg);
+            }
+            m_callMap.RemoveAt(count);
+            count = m_callMap.Count;
+        }
+    }
+
     public void Connect(string ip = GameConfig.serverIP,int port = GameConfig.serverPort)
     {
         if(null != m_tcpClient)
@@ -47,31 +62,36 @@ public class NetManager
             Debug.Log("====成功连接到服务器" + ip + ":" + port);
             connected = true;
             m_stream = m_tcpClient.GetStream();
+            lock (m_stream)
+            {
+                AsyncCallback callBack = new AsyncCallback(ReadComplete);
+                m_stream.BeginRead(m_buff, 0, BUFF_SIZE, callBack, null);
+            }
         }
     }
 
     public void AddNetCallback(string key,Action<object> callback)
     {
-        Int16 id = NetIDContainer.GetMessageId(key);
-        if(m_netCallbackMap.ContainsKey(id))
+        //Int16 id = NetIDContainer.GetMessageId(key);
+        if(m_netCallbackMap.ContainsKey(key))
         {
-            List<Action<object>> callbacks = m_netCallbackMap[id];
+            List<Action<object>> callbacks = m_netCallbackMap[key];
             callbacks.Add(callback);
         }
         else
         {
             List<Action<object>> callbacks = new List<Action<object>>();
             callbacks.Add(callback);
-            m_netCallbackMap.Add(id, callbacks);
+            m_netCallbackMap.Add(key, callbacks);
         }
     }
 
     public void RemoveNetCallback(string key, Action<object> callback)
     {
-        Int16 id = NetIDContainer.GetMessageId(key);
-        if (m_netCallbackMap.ContainsKey(id) && m_netCallbackMap[id].Contains(callback))
+      //  Int16 id = NetIDContainer.GetMessageId(key);
+        if (m_netCallbackMap.ContainsKey(key) && m_netCallbackMap[key].Contains(callback))
         {
-            List<Action<object>> callbacks = m_netCallbackMap[id];
+            List<Action<object>> callbacks = m_netCallbackMap[key];
             callbacks.Remove(callback);
         }
     }
@@ -104,12 +124,6 @@ public class NetManager
 
         byte[] toSendBytes = strm.ToArray();
         m_stream.Write(toSendBytes, 0, toSendBytes.Length);
-
-        lock(m_stream)
-        {
-            AsyncCallback callBack = new AsyncCallback(ReadComplete);
-            m_stream.BeginRead(m_buff, 0, BUFF_SIZE, callBack, null);
-        }
     }
 
     private void ReadComplete(IAsyncResult ar)
@@ -122,10 +136,6 @@ public class NetManager
             {
                 bytesRead = m_stream.EndRead(ar);
             }
-            if (bytesRead == 0)
-            {
-                return;
-            }
             Int16 msgLen = BitConverter.ToInt16(GetBuff(m_buff, 0, 2),0);
             Int16 msgId = BitConverter.ToInt16(GetBuff(m_buff,2, 2), 0);
             string msgKey = NetIDContainer.GetMessageKey(msgId);
@@ -134,7 +144,6 @@ public class NetManager
             MemoryStream msgStream = new MemoryStream();
             msgStream.Write(m_buff, 4, msgLen - 2);
             msgStream.Position = 0;
-            //msgKey = msgKey.Contains("snake.") ? msgKey.Substring(6) : msgKey;
             Type type = Assembly.GetAssembly(typeof(MsgMsgInit)).GetType("Snake3D." + msgKey, true);
             if (null == type)
             {
@@ -143,7 +152,7 @@ public class NetManager
             }
             ProtobufSerializer serializer = new ProtobufSerializer();
             object msg = serializer.Deserialize(msgStream,null,type);
-            InvokeCallback(msgId, msg);
+            InvokeCallback(msgKey, msg);
 			if("MsgError" == msgKey)
 			{
 				MsgError err = msg as MsgError;
@@ -165,17 +174,22 @@ public class NetManager
         }
     }
 
-    private void InvokeCallback(Int16 msgId,object msg)
+    private void InvokeCallback(string msgKey,object msg)
     {
-        if(m_netCallbackMap.ContainsKey(msgId))
+        if(m_netCallbackMap.ContainsKey(msgKey))
         {
-            List<Action<object>> callbacks = m_netCallbackMap[msgId];
-            int count = callbacks.Count;
-            while(count-- > 0)
-            {
-                Action<object> callback = callbacks[count];
-                callback.Invoke(msg);
-            }
+            List<Action<object>> callbacks = m_netCallbackMap[msgKey];
+            NetCall netCall = new NetCall();
+            netCall.msgKey = msgKey;
+            netCall.msg = msg;
+            netCall.calls = callbacks;
+            m_callMap.Add(netCall);
+            //int count = callbacks.Count;
+            //while(count-- > 0)
+            //{
+            //    Action<object> callback = callbacks[count];
+            //    callback.Invoke(msg);
+            //}
         }
     }
 
@@ -194,5 +208,13 @@ public class NetManager
     private NetworkStream m_stream;
     private byte[] m_buff = new byte[BUFF_SIZE];
     private const int BUFF_SIZE= 8192;
-    private Dictionary<Int16, List<Action<object>>> m_netCallbackMap = new Dictionary<short, List<Action<object>>>();
+    private Dictionary<string, List<Action<object>>> m_netCallbackMap = new Dictionary<string, List<Action<object>>>();
+    private List<NetCall> m_callMap = new List<NetCall>();
+}
+
+public class NetCall
+{
+    public string msgKey;
+    public object msg;
+    public List<Action<object>> calls;
 }

@@ -28,6 +28,7 @@ public class Game : MonoBehaviour {
 	void Update ()
     {
         if (null != curScene) curScene.OnUpdate(Time.deltaTime);
+        NetManager.Instance.Update();
 	}
 
     public static Game Instance()
