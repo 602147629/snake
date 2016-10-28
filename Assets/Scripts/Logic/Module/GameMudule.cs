@@ -97,6 +97,7 @@ public class GameMudule : ModuleBase
 	void OnGetMessageRoomBack(object msg)
 	{
 		roomEnterData = msg as MsgRoomEnter;
+		InitSnake (roomEnterData);
 	    getFoodInfo();
 
 	}
@@ -130,22 +131,31 @@ public class GameMudule : ModuleBase
 	public void Init(GameView gv)
 	{
 		m_GameView = gv;
+	}
+
+	private void InitSnake(MsgRoomEnter roomEnterData)
+	{
+		Snake snake = new Snake ();
 		if (roomEnterData == null) {
-			m_ToDirection = new Vector3 (0, 0, 1);
+			return;
 		} else {
 			for (int i=0; i<roomEnterData.PlayerList.Count; i++) {
+				Vector3 StartVector = new Vector3 (roomEnterData.PlayerList [i].DirectionX, 0, roomEnterData.PlayerList [i].DirectionY);
+				m_SelfSnake=CreateSnake(roomEnterData.PlayerList [i].AccountId, StartVector, roomEnterData.PlayerList [i].SurplusLength, roomEnterData.PlayerList [i].Speed * 0.005f);
 				if(UserNmae==roomEnterData.PlayerList[i].AccountId){
 					m_ToDirection=new Vector3(roomEnterData.PlayerList[i].DirectionX,0,roomEnterData.PlayerList[i].DirectionY);
 				}
 			}
 		}
 	}
-	
 	// Update is called once per frame
 	public Snake CreateSnake(string name,Vector3 pos,UInt32 SetSelfLength,float speed)
 	{
+		Debug.Log("!1111111111111111111111");
 		Snake snake = new Snake();
+		Debug.Log("!222222222222222222222");
 		snake.Init(name, pos,SetSelfLength,speed);
+		Debug.Log("!33333333333333333333333");
 		return snake;
 	}
 	public void SetSelfTo(Vector3 to)

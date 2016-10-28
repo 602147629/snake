@@ -14,14 +14,18 @@ public class Snake
     // Use this for initialization
     public void Init(string name, Vector3 pos, uint surplusLength, float speed)
     {
+		Debug.Log ("444444444444444444444444");
         _name = name;
         _speed = speed;
-
-        _parent = new GameObject();
+		Debug.Log ("***********"+pos);
+		_parent = GameObject.Instantiate<GameObject>( Resources.Load<GameObject>("Prefabs/Themes/Default/head"));
         _parent.name = name;
         _targetPos.Add(pos);
+		Debug.Log ("5555555555555555555555");
         CreateHead();
+		Debug.Log ("66666666666666666666666");
         SetLength(surplusLength);
+		Debug.Log ("7777777777777777777777");
     }
     public void Move(Vector3 tarPos)
     {
