@@ -150,8 +150,10 @@ public class NetManager
                 Int16 msgId = BitConverter.ToInt16(GetBuff(m_buff, readIdx + 2, 2), 0);
                 if (msgLen + readIdx >= bytesRead) break;
                 string msgKey = NetIDContainer.GetMessageKey(msgId);
-
-                Debug.Log("=======接收ID: " + msgId + "  key:" + msgKey);
+                if (!msgLogIgnor.Contains(msgKey))
+                {
+                    Debug.Log("=======接收ID: " + msgId + "  key:" + msgKey);
+                }
                 MemoryStream msgStream = new MemoryStream();
                 msgStream.Write(m_buff, readIdx + 4, msgLen - 2);
                 msgStream.Position = 0;
@@ -198,12 +200,6 @@ public class NetManager
             netCall.msg = msg;
             netCall.calls = callbacks;
             m_callMap.Add(netCall);
-            //int count = callbacks.Count;
-            //while(count-- > 0)
-            //{
-            //    Action<object> callback = callbacks[count];
-            //    callback.Invoke(msg);
-            //}
         }
     }
 
@@ -224,6 +220,7 @@ public class NetManager
     private const int BUFF_SIZE= 8192;
     private Dictionary<string, List<Action<object>>> m_netCallbackMap = new Dictionary<string, List<Action<object>>>();
     private List<NetCall> m_callMap = new List<NetCall>();
+    private List<string> msgLogIgnor = new List<string> { "MsgAddTargetPos" };
 }
 
 public class NetCall
