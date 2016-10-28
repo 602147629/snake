@@ -6,12 +6,12 @@ using Snake3D;
 
 public class Foods : MonoBehaviour
 {
-    public Dictionary<Int32, GameObject> mFoodList;
+    public Dictionary<UInt32, GameObject> mFoodList;
     void Start()
     {
         if (mFoodList == null)
         {
-            mFoodList = new Dictionary<int, GameObject>();
+            mFoodList = new Dictionary<UInt32, GameObject>();
         }
     }
 
@@ -31,20 +31,24 @@ public class Foods : MonoBehaviour
     private void funtionAdd(Notification msg)
     {
        
-        FoodItem item = msg["Addfoods"] as FoodItem;
-        String  key = msg["AddFoodsKey"].ToString();
-        Vector3 _postion = new Vector3(item.GetPosX(),0,item.GetPosY());
-        string _path = ResConfig.THEME_PATH + UserLogic.Instance.ThemeUsing + "/body";
-        GameObject _bodyRes = Resources.Load<GameObject>(_path);
-        GameObject _food = GameObject.Instantiate(_bodyRes, _postion, Quaternion.identity) as GameObject;
-        _food.name = "Food";
-        _food.transform.parent = transform.GetChild(0);
-        mFoodList.Add(item.GetId(),_food);
+        List<FoodItem> _foodList = msg["Addfoods"] as List<FoodItem>;
+        for (int i = 0; i < _foodList.Count; i++)
+        {
+            FoodItem item = _foodList[i];
+            Vector3 _postion = new Vector3(item.GetPosX(), 0, item.GetPosY());
+            string _path = ResConfig.THEME_PATH + UserLogic.Instance.ThemeUsing + "/body";
+            GameObject _bodyRes = Resources.Load<GameObject>(_path);
+            GameObject _food = GameObject.Instantiate(_bodyRes, _postion, Quaternion.identity) as GameObject;
+            _food.name = "Food";
+            _food.transform.parent = transform.GetChild(0);
+            mFoodList.Add(item.GetId(), _food);
+        }
+       
     }
 
     private void funtionDel(Notification msg)
     {
-        Int32 deleteKey = (Int32) msg["Deletefoods"];
+        UInt32 deleteKey = (UInt32) msg["Deletefoods"];
         if (mFoodList.ContainsKey(deleteKey))
         {
             mFoodList.Remove(deleteKey);

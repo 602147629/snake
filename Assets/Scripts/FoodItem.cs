@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class FoodItem
 {
-    public  Int32 Ids;
+    public  UInt32 Ids;
     //x
     public  float PosX;
     //y
@@ -11,14 +11,14 @@ public class FoodItem
     //半径
     public  float Radius ;
     //分数
-    public  Int32 Score;
+    public  UInt32 Score;
 
-    public  Int32 GetId()
+    public  UInt32 GetId()
     {
         return Ids;
     }
 
-    public  void SetId(Int32 id)
+    public  void SetId(UInt32 id)
     {
         Ids = id;
     }
@@ -53,12 +53,12 @@ public class FoodItem
     }
 
 
-    public  Int32 GetScore()
+    public  UInt32 GetScore()
     {
         return Score;
     }
 
-    public  void SetScore(Int32 score)
+    public  void SetScore(UInt32 score)
     {
         Score = score;
     }
