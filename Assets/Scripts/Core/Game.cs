@@ -27,7 +27,6 @@ public class Game : MonoBehaviour {
 
     void OnDestroy()
     {
-        Debug.Log("pppppppppppppppppppppppppppppppp");
         NetManager.Instance.DisConnect();
     }
 	
