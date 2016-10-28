@@ -174,7 +174,6 @@ public class NetManager
         }
         catch (Exception ex)
         {
-            Debug.LogError("===============: " + ex.Message);
             if (m_stream != null)
                 m_stream.Dispose();
             m_tcpClient.Close();

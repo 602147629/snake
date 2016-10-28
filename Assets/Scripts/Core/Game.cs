@@ -12,6 +12,8 @@ public class Game : MonoBehaviour {
     private SceneBase curScene ;
     public SceneBase CurScene{get { return curScene; }}
     public Camera camera2D { get; private set; }
+    public Action loadComplete;
+
 
     private Transform container3D;
     public Transform Container3D
@@ -65,9 +67,10 @@ public class Game : MonoBehaviour {
 
     }
 
-    public void CreateScene(string sceneName,Type sceneType)
+    public void CreateScene(string sceneName,Type sceneType,Action loadComplete = null)
     {
         toLoadSceneData = new SceneData(sceneName, sceneType) ;
+        this.loadComplete = loadComplete == null ? null : loadComplete ;
         BeginCoroutine(LoadScene);
     }
 
@@ -83,6 +86,10 @@ public class Game : MonoBehaviour {
         if(null != curScene) curScene.OnRelease();
         curScene = Activator.CreateInstance(toLoadSceneData.sceneType) as SceneBase;
         curScene.OnLoad();
+        if(null != loadComplete)
+        {
+            loadComplete.Invoke();
+        }
     }
 
     private SceneData toLoadSceneData;

@@ -40,14 +40,6 @@ public class Rocker : UIBase
         {
             obj.transform.localPosition = Vector3.zero;
         }
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            gameMudule.SetSelfLength(gameMudule.m_SelfSnake._surplusLength + 1);
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            gameMudule.SetSelfLength(gameMudule.m_SelfSnake._surplusLength - 1);
-        }
         if (Input.GetKeyDown(KeyCode.Z))
         {
            // gameMudule.se();

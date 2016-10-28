@@ -21,12 +21,16 @@ public class RoomSelectedUI : UIBase
     {
         if(0 == param1)
         {
-            Game.Instance().CreateScene("Game",typeof(GameScene));
-            gameModule.SendToEnterRoom();
+            Game.Instance().CreateScene("Game",typeof(GameScene),LoadSceneComplete);
         }
         else
         {
 
         }
+    }
+
+    void LoadSceneComplete()
+    {
+        gameModule.SendToEnterRoom();
     }
 }
