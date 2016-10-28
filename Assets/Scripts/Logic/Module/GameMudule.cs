@@ -16,7 +16,6 @@ public class GameMudule : ModuleBase
 	private Vector3 m_ToDirection;
 	private GameView m_GameView;
 	public string UserNmae;
-    public Dictionary<Int32, FoodItem> mFoodList;
     public override void OnLoad()
     {
 	#if UNITY_ANDROID
@@ -97,7 +96,8 @@ public class GameMudule : ModuleBase
 	void OnGetMessageRoomBack(object msg)
 	{
 		roomEnterData = msg as MsgRoomEnter;
-	    getFoodInfo();
+		InitSnake (roomEnterData);
+	 
 
 	}
 	
@@ -130,22 +130,31 @@ public class GameMudule : ModuleBase
 	public void Init(GameView gv)
 	{
 		m_GameView = gv;
+	}
+
+	private void InitSnake(MsgRoomEnter roomEnterData)
+	{
+		Snake snake = new Snake ();
 		if (roomEnterData == null) {
-			m_ToDirection = new Vector3 (0, 0, 1);
+			return;
 		} else {
 			for (int i=0; i<roomEnterData.PlayerList.Count; i++) {
+				Vector3 StartVector = new Vector3 (roomEnterData.PlayerList [i].DirectionX, 0, roomEnterData.PlayerList [i].DirectionY);
+				m_SelfSnake=CreateSnake(roomEnterData.PlayerList [i].AccountId, StartVector, roomEnterData.PlayerList [i].SurplusLength, roomEnterData.PlayerList [i].Speed * 0.005f);
 				if(UserNmae==roomEnterData.PlayerList[i].AccountId){
 					m_ToDirection=new Vector3(roomEnterData.PlayerList[i].DirectionX,0,roomEnterData.PlayerList[i].DirectionY);
 				}
 			}
 		}
 	}
-	
 	// Update is called once per frame
 	public Snake CreateSnake(string name,Vector3 pos,UInt32 SetSelfLength,float speed)
 	{
+		Debug.Log("!1111111111111111111111");
 		Snake snake = new Snake();
+		Debug.Log("!222222222222222222222");
 		snake.Init(name, pos,SetSelfLength,speed);
+		Debug.Log("!33333333333333333333333");
 		return snake;
 	}
 	public void SetSelfTo(Vector3 to)
@@ -156,38 +165,6 @@ public class GameMudule : ModuleBase
 	{
 		m_SelfSnake.SetLength(length);
 	}
-
-    public void getFoodInfo()
-    {
-        Debug.Log("88888888888888888888888888888");
-        NetManager.Instance.AddNetCallback("MsgAddFood", FoodNetInit);
-    }
-
-    public void FoodNetInit(object msg)
-    {
-        Debug.Log("------链接成功--++++++");
-        MsgAddFood initMsg = msg as MsgAddFood;
-        List<MsgFoodStruct> msgConfs = initMsg.FoodList;
-        for (int i = 0; i < msgConfs.Count; i++)
-        {
-            MsgFoodStruct item = msgConfs[i];
-
-            if (mFoodList == null) ;
-            {
-                mFoodList = new Dictionary<Int32, FoodItem>();
-            }
-            FoodItem items = new FoodItem();
-            items.SetId((Int32)item.Id);
-            items.SetPosX((float)item.PosX);
-            items.SetPosY((float)item.PosY);
-            items.SetRadius((float)item.Radius);
-            items.SetScore((Int32)item.Score);
-            Food.Instance.FoodAppear(items);
-            mFoodList.Add(items.Ids, items);
-            
-        }
-        Debug.Log("------mFoodList--++++++"+ mFoodList.Count);
-    }
 
     //获取mac地址
     public static string GetMacAddressPCIOS()
