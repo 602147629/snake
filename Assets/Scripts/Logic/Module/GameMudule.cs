@@ -29,24 +29,18 @@ public class GameMudule : ModuleBase
 	private Vector3 m_ToDirection;
 	private GameView m_GameView;
     private Dictionary<int,MapData> mapDataDic = new Dictionary<int, MapData>();
+    private MapData curMapData;
 
     public override void OnLoad()
     {
-	#if UNITY_ANDROID
-	private AndroidJavaObject javaObject = null;
-	private AndroidJavaClass javaClass = null;
-	javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-	javaObject = javaClass.GetStatic<AndroidJavaObject>("currentActivity");
-	#endif
+        ReadMapXML();
         NetManager.Instance.AddNetCallback("MsgMsgInit",OnNetMsgInit);
 		NetManager.Instance.AddNetCallback("MsgLogin", OnLogin);
 		NetManager.Instance.AddNetCallback("MsgRoomInfo", OnNetGetRoomInfo);
 		NetManager.Instance.AddNetCallback("MsgRoomEnter",NetEnterRoom);
 		NetManager.Instance.AddNetCallback("MsgAddTargetPos",MoveToNewPositaion);
-        //NetManager.Instance.AddNetCallback("读取相机位置", MapDataReadInfo);
         NetManager.Instance.Connect();
         GetMsgConfig();
-        ReadMapXML();
     }
 
     public override void OnRelease()
@@ -111,7 +105,13 @@ public class GameMudule : ModuleBase
 	{
 		roomEnterData = msg as MsgRoomEnter;
         isInRoom = true;
+        curMapData = mapDataDic[roomEnterData.id];
         InitSnake(roomEnterData);
+    }
+
+    public MapData GetCurMapData()
+    {
+        return curMapData;
     }
 	
 	public void MsgExitRoom(){
@@ -132,14 +132,6 @@ public class GameMudule : ModuleBase
     public MapData GetMapData(int id)
     {
         return mapDataDic[id];
-    }
-
-    public void MapDataReadInfo(object msg)
-    {
-        Int32 _id = (Int32) msg;
-        Notification notify = new Notification("readMapConfig", null);
-        notify["configId"] = _id;
-        notify.Send();
     }
 
     public bool IsInRoom
@@ -195,7 +187,6 @@ public class GameMudule : ModuleBase
         XmlDocument xmlDoc = new XmlDocument();
         xmlDoc.Load("Assets/Resources/Configs/Mapconfig.xml");
         XmlNode rootNode = xmlDoc.FirstChild.NextSibling;
-        Debug.Log("初始化值为"+mapDataDic.Count);
         for (int i = 0; i < rootNode.ChildNodes.Count; i++)
         {
             XmlNode node = rootNode.ChildNodes[i];
@@ -209,7 +200,6 @@ public class GameMudule : ModuleBase
             mapDataDic.Add(map.id, map);
            // Debug.Log("嗯呢"+node.Attributes["width"].Value);
         }
-        Debug.Log("完毕值为"+mapDataDic.Count);
        
     }
 
