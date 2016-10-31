@@ -29,7 +29,7 @@ public class GameMudule : ModuleBase
 	private Vector3 m_ToDirection;
 	private GameView m_GameView;
     private Dictionary<int,MapData> mapDataDic = new Dictionary<int, MapData>();
-    private MapData curMapData;
+    private MapData curMapData = new MapData();
 
     public override void OnLoad()
     {
@@ -105,7 +105,11 @@ public class GameMudule : ModuleBase
 	{
 		roomEnterData = msg as MsgRoomEnter;
         isInRoom = true;
-        curMapData = mapDataDic[roomEnterData.id];
+         curMapData = mapDataDic[1];
+        Notification notify = new Notification("MapConfig", null);
+        notify["MapConfigs"] = curMapData;
+        notify.Send();
+        // Debug.Log("22222222222222222222222222222222222222222222222");
         InitSnake(roomEnterData);
     }
 

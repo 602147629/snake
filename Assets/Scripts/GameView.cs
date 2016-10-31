@@ -9,13 +9,23 @@ public class GameView : MonoBehaviour
     public GameObject mMap;
     public Camera myCamera;
 	private GameMudule gameMudule;
-	private Vector3 camOffset;
+	private Vector3 camOffset =  new Vector3(0,0,0);
     // Use this for initialization
     void Start () {
 		gameMudule = ModuleManager.Instance.GetModule<GameMudule> ();
 		gameMudule.Init (this);
-		mapConfig();
 	}
+
+    void OnEnable()
+    {
+        Messager.Instance.AddNotification("MapConfig",ConfigChange);
+    }
+
+    void OnDisable()
+    {
+        
+    }
+
     // Update is called once per frame
     void Update () {
 		if (gameMudule.m_SelfSnake == null) {
@@ -34,9 +44,9 @@ public class GameView : MonoBehaviour
         myCamera.transform.LookAt(tarPos);
     }
 
-    private void mapConfig()
+    private void ConfigChange(Notification msg)
     {
-        MapData mapData = gameMudule.GetCurMapData();
+        MapData mapData = msg["MapConfigs"] as MapData;
         mMap.transform.localScale= new Vector3(mapData.mapWidth,1,mapData.mapHeight);
         camOffset = new Vector3(0,mapData.camHeight,mapData.camOffset);
     }
