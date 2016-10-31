@@ -5,6 +5,16 @@ using System.IO;
 using UnityEngine;
 using System.Net.NetworkInformation;
 using System.Collections;
+using System.Xml;
+
+public class MapData
+{
+    public Int32 id;
+    public Int32 mapWidth;
+    public Int32 mapHeight;
+    public Int32 camHeight;
+    public Int32 camOffset;
+}
 
 [Module("GameMudule", true)]
 public class GameMudule : ModuleBase
@@ -18,6 +28,8 @@ public class GameMudule : ModuleBase
     
 	private Vector3 m_ToDirection;
 	private GameView m_GameView;
+    private Dictionary<int,MapData> mapDataDic = new Dictionary<int, MapData>();
+
     public override void OnLoad()
     {
 	#if UNITY_ANDROID
@@ -31,9 +43,10 @@ public class GameMudule : ModuleBase
 		NetManager.Instance.AddNetCallback("MsgRoomInfo", OnNetGetRoomInfo);
 		NetManager.Instance.AddNetCallback("MsgRoomEnter",NetEnterRoom);
 		NetManager.Instance.AddNetCallback("MsgAddTargetPos",MoveToNewPositaion);
+        //NetManager.Instance.AddNetCallback("读取相机位置", MapDataReadInfo);
         NetManager.Instance.Connect();
         GetMsgConfig();
-        
+        ReadMapXML();
     }
 
     public override void OnRelease()
@@ -116,6 +129,19 @@ public class GameMudule : ModuleBase
 		NetManager.Instance.SendMessage("MsgMove",Move);
 	}
 
+    public MapData GetMapData(int id)
+    {
+        return mapDataDic[id];
+    }
+
+    public void MapDataReadInfo(object msg)
+    {
+        Int32 _id = (Int32) msg;
+        Notification notify = new Notification("readMapConfig", null);
+        notify["configId"] = _id;
+        notify.Send();
+    }
+
     public bool IsInRoom
     {
         get { return isInRoom; }
@@ -163,4 +189,29 @@ public class GameMudule : ModuleBase
 	{
 		m_SelfSnake.SetLength(length);
 	}
+
+    private void ReadMapXML()
+    {
+        XmlDocument xmlDoc = new XmlDocument();
+        xmlDoc.Load("Assets/Resources/Configs/Mapconfig.xml");
+        XmlNode rootNode = xmlDoc.FirstChild.NextSibling;
+        Debug.Log("初始化值为"+mapDataDic.Count);
+        for (int i = 0; i < rootNode.ChildNodes.Count; i++)
+        {
+            XmlNode node = rootNode.ChildNodes[i];
+            MapData map = new MapData();
+           // < map id = "1" width = "500" length = "500" path = "map/Map1" camHeight = "30" camOffet = "-10" maxPlayer = "50" />
+            map.id = Int32.Parse(node.Attributes["id"].Value);
+            map.mapWidth = Int32.Parse(node.Attributes["width"].Value);
+            map.mapHeight = Int32.Parse(node.Attributes["length"].Value);
+            map.camOffset = Int32.Parse(node.Attributes["camOffet"].Value);
+            map.camHeight = Int32.Parse(node.Attributes["camHeight"].Value);
+            mapDataDic.Add(map.id, map);
+           // Debug.Log("嗯呢"+node.Attributes["width"].Value);
+        }
+        Debug.Log("完毕值为"+mapDataDic.Count);
+       
+    }
+
+  
 }
