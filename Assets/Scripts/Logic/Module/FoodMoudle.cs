@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Snake3D;
 using UnityEditor.VersionControl;
 using Random = UnityEngine.Random;
+
 [Module("FoodMoudle", true)]
 public class FoodMoudle : ModuleBase
 {
@@ -32,16 +33,16 @@ public class FoodMoudle : ModuleBase
         Debug.Log("+++++++链接成功28--++++++");
         MsgAddFood initMsg = msg as MsgAddFood;
         List<MsgFoodStruct> msgConfs = initMsg.FoodList;
-        List<FoodItem> itemList =new List<FoodItem>();
+        List<FoodItem> itemList = new List<FoodItem>();
         for (int i = 0; i < msgConfs.Count; i++)
         {
             MsgFoodStruct item = msgConfs[i];
             FoodItem items = new FoodItem();
-            items.SetId((UInt32)item.Id);
-            items.SetPosX((float)item.PosX);
-            items.SetPosY((float)item.PosY);
-            items.SetRadius((float)item.Radius);
-            items.SetScore((UInt32)item.Score);
+            items.SetId((UInt32) item.Id);
+            items.SetPosX((float) item.PosX);
+            items.SetPosY((float) item.PosY);
+            items.SetRadius((float) item.Radius);
+            items.SetScore((UInt32) item.Score);
             mFoodList.Add(items.GetId(), items);
             Debug.Log("------mFoodList--++++++" + mFoodList.Count);
             itemList.Add(items);
@@ -53,33 +54,25 @@ public class FoodMoudle : ModuleBase
         notify.Send();
 
     }
- 
+
     public void FoodNetDel(object msg)
     {
         Debug.Log("------链接成功--------");
-        List<UInt32> msgConfs = (List<UInt32>)msg ;
+        List<UInt32> msgConfs = (List<UInt32>) msg;
         for (int j = 0; j < msgConfs.Count; j++)
         {
             UInt32 _deletekey = (UInt32) msgConfs[i];
-
+            List<UInt32> _deleteIDList = new List<UInt32>();
             if (mFoodList.ContainsKey(_deletekey))
             {
                 mFoodList.Remove(_deletekey);
-                notifyDeleteFood(_deletekey);
+                _deleteIDList.Add(_deletekey);
             }
+            Notification notify = new Notification("DeleteFoods", null);
+            notify["Deletfoods"] = _deleteIDList;
+            notify.Send();
         }
 
-      
-
     }
 
-    
-        
-    
-    public void notifyDeleteFood(UInt32 key)
-    {
-        Notification notify = new Notification("DeleteFoods", null);
-        notify["Deletfoods"] = key;
-        notify.Send();
-    }
 }

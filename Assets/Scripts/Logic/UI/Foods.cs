@@ -48,13 +48,16 @@ public class Foods : MonoBehaviour
 
     private void funtionDel(Notification msg)
     {
-        UInt32 deleteKey = (UInt32) msg["Deletefoods"];
-        if (mFoodList.ContainsKey(deleteKey))
+        List<UInt32> item = (List<UInt32>) msg["Deletefoods"];
+        for (int i = 0; i < item.Count; i++)
         {
-            mFoodList.Remove(deleteKey);
-            Destroy(mFoodList[deleteKey]);
+            UInt32 deleteKey = item[i];
+            if (mFoodList.ContainsKey(deleteKey))
+            {
+                mFoodList.Remove(deleteKey);
+                Destroy(mFoodList[deleteKey]);
+            }
         }
-       
     }
     
 }
