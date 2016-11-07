@@ -23,7 +23,7 @@ public class GameMudule : ModuleBase
 	public MsgAddTargetPos AddTargetPos;
 	public List<Snake> m_OtherSnakeObj;
 	public Snake m_SelfSnake;
-	public string UserNmae;
+	public string UserNmae ="11";
     public bool isInRoom;
     
 	private Vector3 m_ToDirection;
@@ -39,6 +39,7 @@ public class GameMudule : ModuleBase
 		NetManager.Instance.AddNetCallback("MsgRoomInfo", OnNetGetRoomInfo);
 		NetManager.Instance.AddNetCallback("MsgRoomEnter",NetEnterRoom);
 		NetManager.Instance.AddNetCallback("MsgAddTargetPos",MoveToNewPositaion);
+        NetManager.Instance.AddNetCallback("MsgMove", Moving);
         NetManager.Instance.Connect();
         GetMsgConfig();
     }
@@ -50,6 +51,7 @@ public class GameMudule : ModuleBase
         NetManager.Instance.RemoveNetCallback("MsgLogin", OnLogin);
 		NetManager.Instance.RemoveNetCallback("MsgRoomEnter",NetEnterRoom);
 		NetManager.Instance.RemoveNetCallback("MsgAddTargetPos",MoveToNewPositaion);
+        NetManager.Instance.RemoveNetCallback("MsgMove", Moving);
     }
 
     void GetMsgConfig()
@@ -57,7 +59,7 @@ public class GameMudule : ModuleBase
         MsgMsgInit msgInit = new MsgMsgInit();
         NetManager.Instance.SendMessage("MsgMsgInit", msgInit);
     }
-
+    
     void OnNetMsgInit(object msg)
     {
         MsgMsgInit initMsg = msg as MsgMsgInit;
@@ -117,8 +119,17 @@ public class GameMudule : ModuleBase
     {
         return curMapData;
     }
-	
-	public void MsgExitRoom(){
+
+    public void Moving(object msg)
+    {
+        MsgMove move = msg as MsgMove;
+        MsgPosInfo mNextPos = move.TargetPos;
+        Debug.Log("接受数据成功");
+        this.m_SelfSnake.Move(new Vector3(mNextPos.PosX, 0, mNextPos.PosY));
+    }
+
+
+    public void MsgExitRoom(){
 		MsgExitRoom msgExit = new Snake3D.MsgExitRoom ();
 		NetManager.Instance.SendMessage("MsgExitRoom",msgExit);
 	}
@@ -150,7 +161,8 @@ public class GameMudule : ModuleBase
 			if(PosStruct[i].AccountId==UserNmae){
 				Vector3 MsgDirection = new Vector3 (PosStruct [i].PosX, 0, PosStruct [i].PosY);
 				this.m_SelfSnake.Move (MsgDirection);
-			}
+                Debug.Log("啦啦啦啦啦啦--------------------");
+            }
 		}
 	}
 	//初始化蛇的信息
@@ -202,7 +214,6 @@ public class GameMudule : ModuleBase
             map.camOffset = Int32.Parse(node.Attributes["camOffet"].Value);
             map.camHeight = Int32.Parse(node.Attributes["camHeight"].Value);
             mapDataDic.Add(map.id, map);
-           // Debug.Log("嗯呢"+node.Attributes["width"].Value);
         }
        
     }
